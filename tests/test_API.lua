@@ -26,18 +26,18 @@ local T = MiniTest.new_set({
 T["setup()"] = MiniTest.new_set()
 
 T["setup()"]["sets exposed methods and default options value"] = function()
-    child.lua([[require('your-plugin-name').setup()]])
+    child.lua([[require('salesforce').setup()]])
 
     -- global object that holds your plugin information
-    eq_type_global(child, "_G.YourPluginName", "table")
+    eq_type_global(child, "_G.Salesforce", "table")
 
     -- public methods
-    eq_type_global(child, "_G.YourPluginName.toggle", "function")
-    eq_type_global(child, "_G.YourPluginName.disable", "function")
-    eq_type_global(child, "_G.YourPluginName.enable", "function")
+    eq_type_global(child, "_G.Salesforce.toggle", "function")
+    eq_type_global(child, "_G.Salesforce.disable", "function")
+    eq_type_global(child, "_G.Salesforce.enable", "function")
 
     -- config
-    eq_type_global(child, "_G.YourPluginName.config", "table")
+    eq_type_global(child, "_G.Salesforce.config", "table")
 
     -- assert the value, and the type
     eq_config(child, "debug", false)
@@ -45,7 +45,7 @@ T["setup()"]["sets exposed methods and default options value"] = function()
 end
 
 T["setup()"]["overrides default values"] = function()
-    child.lua([[require('your-plugin-name').setup({
+    child.lua([[require('salesforce').setup({
         -- write all the options with a value different than the default ones
         debug = true,
     })]])

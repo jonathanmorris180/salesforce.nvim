@@ -1,2 +1,2 @@
-YourPluginName.options	neovim-plugin-boilerplate.txt	/*YourPluginName.options*
-YourPluginName.setup()	neovim-plugin-boilerplate.txt	/*YourPluginName.setup()*
+Salesforce.options	salesforce.txt	/*Salesforce.options*
+Salesforce.setup()	salesforce.txt	/*Salesforce.setup()*
