@@ -1,7 +1,11 @@
 -- You can use this loaded variable to enable conditional parts of your plugin.
-print("Loaded salesforce plugin!")
 local S = require("salesforce")
+local A = require("salesforce/execute-anon")
 
-vim.api.nvim_create_user_command("Salesforce", function()
+vim.api.nvim_create_user_command("SalesforceToggle", function()
     S.toggle()
+end, {})
+
+vim.api.nvim_create_user_command("SfdxExecuteFile", function()
+    A.execute_anon()
 end, {})
