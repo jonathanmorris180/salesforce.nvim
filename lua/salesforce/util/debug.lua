@@ -1,4 +1,12 @@
-local D = {}
+local C = require("salesforce.config")
+local Debugger = {}
+
+function Debugger:new()
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
 
 ---prints only if debug is true.
 ---
@@ -6,8 +14,8 @@ local D = {}
 ---@param str string: the formatted string.
 ---@param ... any: the arguments of the formatted string.
 ---@private
-function D.log(scope, str, ...)
-    if _G.Salesforce.config ~= nil and not _G.Salesforce.config.debug then
+function Debugger:log(scope, str, ...)
+    if not C:get_options().debug then
         return
     end
 
@@ -24,7 +32,7 @@ function D.log(scope, str, ...)
             os.date("%H:%M:%S"),
             line,
             scope,
-            string.format(str, ...)
+            select("#", ...) == 0 and str or string.format(str, ...)
         )
     )
 end
@@ -34,8 +42,8 @@ end
 ---@param table table: the table to print.
 ---@param indent number?: the default indent value, starts at 0.
 ---@private
-function D.tprint(table, indent)
-    if _G.Salesforce.config ~= nil and not _G.Salesforce.config.debug then
+function Debugger:tprint(table, indent)
+    if not C:get_options().debug then
         return
     end
 
@@ -47,7 +55,7 @@ function D.tprint(table, indent)
         local formatting = string.rep("  ", indent) .. k .. ": "
         if type(v) == "table" then
             print(formatting)
-            D.tprint(v, indent + 1)
+            self:tprint(v, indent + 1)
         elseif type(v) == "boolean" then
             print(formatting .. tostring(v))
         elseif type(v) == "function" then
@@ -58,4 +66,6 @@ function D.tprint(table, indent)
     end
 end
 
-return D
+local debugger = Debugger:new()
+
+return debugger

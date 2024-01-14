@@ -1,7 +1,7 @@
 ## 📃 Summary
 
-<!-- Provide some context about the pull request, it makes the review easier. -->
+<!-- Please provide some context about the pull request -->
 
 ## 📸 Preview
 
-<!-- If there's a visual impact to your change, please provide a screenshot. You can directly upload it to GitHub by dragging in this text area. -->
+<!-- If there's a visual impact to your change, please provide a screenshot. You can directly upload it to GitHub by dragging into this text area. -->

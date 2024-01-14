@@ -1,25 +1,31 @@
-local Salesforce = {}
+local Config = {}
 
---- Your plugin configuration with its default values.
----
---- Default values:
----@eval return MiniDoc.afterlines_to_code(MiniDoc.current.eval_section)
-Salesforce.options = {
-    -- Prints useful logs about what event are triggered, and reasons actions are executed.
-    debug = false,
-}
-
---- Define your salesforce setup.
----
----@param options table Module config table. See |Salesforce.options|.
----
----@usage `require("salesforce").setup()` (add `{}` with your |Salesforce.options| table)
-function Salesforce.setup(options)
-    options = options or {}
-
-    Salesforce.options = vim.tbl_deep_extend("keep", options, Salesforce.options)
-
-    return Salesforce.options
+function Config:new()
+    local o = {}
+    setmetatable(o, self)
+    self.__index = self
+    -- default config values
+    o.options = {
+        -- Prints useful logs about what event are triggered, and reasons actions are executed.
+        debug = false,
+    }
+    return o
 end
 
-return Salesforce
+function Config:get_options()
+    return self.options
+end
+
+--- Setup function
+---
+---@param options table Module config table. See |Config.options|.
+---
+---@usage `require("salesforce").setup()` (add `{}` with your |Config.options| table)
+function Config:setup(options)
+    options = options or {}
+    self.options = vim.tbl_deep_extend("keep", options, self.options)
+end
+
+local config = Config:new()
+
+return config

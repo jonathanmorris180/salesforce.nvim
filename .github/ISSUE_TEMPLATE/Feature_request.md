@@ -1,13 +1,12 @@
 ---
 name: Feature request
-about: Suggest anything that would make your life easier, or the plugin better.
+about: Suggest anything that would make your life easier!
 ---
 
 ## Describe the problem
 
-<!-- Explain what the new feature is, or if it's for the documentation, what do you expect. -->
+<!-- Explain what the new feature is -->
 
 ## Describe the solution
 
-<!-- Explain what your solution would look like. -->
-
+<!-- Explain what your idea would look like -->
