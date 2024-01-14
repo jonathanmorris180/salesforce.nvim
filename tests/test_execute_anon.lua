@@ -10,7 +10,6 @@ local T = MiniTest.new_set({
             child.setup()
             child.lua([[M = require("salesforce")]])
             child.lua([[A = require("salesforce.execute_anon")]])
-            child.lua([[D = require("salesforce.util.debug")]])
         end,
         -- This will be executed one after all tests from this set are finished
         post_once = child.stop,
@@ -44,18 +43,12 @@ T["execute_anon()"] = MiniTest.new_set()
 
 T["execute_anon()"]["displays a mock value in the scratch buffer"] = function()
     mock_system_call()
-    child.lua([[M.setup({debug = true})]])
-    child.lua([[D:toggle_store_logs()]])
+    child.lua(string.format([[M.setup({debug = %s})]], tostring(helpers.debug())))
     child.cmd(string.format("e %s", test_dir))
     child.bo.filetype = "apex"
     child.lua([[A.execute_anon()]])
 
     local buff_content = get_buf_content()
-    local logs = child.lua_get("D:get_logs()")
-    for i, log in ipairs(logs) do
-        print("log " .. i .. ": ")
-        print(log)
-    end
     helpers.expect.equality(buff_content, mock_output)
 end
 

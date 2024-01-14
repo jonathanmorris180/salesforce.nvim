@@ -5,17 +5,13 @@ function Debugger:new()
     local o = {}
     setmetatable(o, self)
     self.__index = self
-    self.store_logs = false
+    self.log_file_path = vim.fn.stdpath("cache") .. "/salesforce.log"
     self.logs = {}
     return o
 end
 
-function Debugger:toggle_store_logs()
-    self.store_logs = not self.store_logs
-end
-
-function Debugger:get_logs()
-    return self.logs
+function Debugger:set_log_file_path(path)
+    self.log_file_path = path
 end
 
 ---prints only if debug is true.
@@ -48,9 +44,8 @@ end
 
 function Debugger:log_str(debug_str)
     print(debug_str)
-    if self.store_logs then
-        table.insert(self.logs, debug_str)
-    end
+    print("Logging to " .. self.log_file_path)
+    vim.fn.writefile({ debug_str }, self.log_file_path, "a")
 end
 
 ---prints the table if debug is true.

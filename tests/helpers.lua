@@ -43,6 +43,11 @@ Helpers.expect.no_match = MiniTest.new_expectation("no string matching", functio
     return str:find(pattern) == nil
 end, errorMessage)
 
+Helpers.debug = function()
+    local debug_val = vim.loop.os_environ()["DEBUG"]
+    return debug_val == "true"
+end
+
 -- Monkey-patch `MiniTest.new_child_neovim` with helpful wrappers
 Helpers.new_child_neovim = function()
     local child = MiniTest.new_child_neovim()
