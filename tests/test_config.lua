@@ -11,7 +11,7 @@ local T = MiniTest.new_set({
         -- This will be executed before every (even nested) case
         pre_case = function()
             -- Restart child process with minimal 'init.lua' script
-            child.restart({ "-u", "scripts/minimal_init.lua" })
+            child.setup()
             child.lua([[M = require("salesforce")]])
             child.lua([[C = require("salesforce.config")]])
         end,

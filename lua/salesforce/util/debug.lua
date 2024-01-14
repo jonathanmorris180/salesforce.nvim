@@ -5,7 +5,17 @@ function Debugger:new()
     local o = {}
     setmetatable(o, self)
     self.__index = self
+    self.store_logs = false
+    self.logs = {}
     return o
+end
+
+function Debugger:toggle_store_logs()
+    self.store_logs = not self.store_logs
+end
+
+function Debugger:get_logs()
+    return self.logs
 end
 
 ---prints only if debug is true.
@@ -26,15 +36,21 @@ function Debugger:log(scope, str, ...)
         line = "L" .. info.currentline
     end
 
-    print(
-        string.format(
-            "[salesforce:%s %s in %s] > %s",
-            os.date("%H:%M:%S"),
-            line,
-            scope,
-            select("#", ...) == 0 and str or string.format(str, ...)
-        )
+    local debug_str = string.format(
+        "[salesforce:%s %s in %s] > %s",
+        os.date("%H:%M:%S"),
+        line,
+        scope,
+        select("#", ...) == 0 and str or string.format(str, ...)
     )
+    self:log_str(debug_str)
+end
+
+function Debugger:log_str(debug_str)
+    print(debug_str)
+    if self.store_logs then
+        table.insert(self.logs, debug_str)
+    end
 end
 
 ---prints the table if debug is true.
@@ -54,14 +70,14 @@ function Debugger:tprint(table, indent)
     for k, v in pairs(table) do
         local formatting = string.rep("  ", indent) .. k .. ": "
         if type(v) == "table" then
-            print(formatting)
+            self:log_str(formatting)
             self:tprint(v, indent + 1)
         elseif type(v) == "boolean" then
-            print(formatting .. tostring(v))
+            self:log_str(formatting .. tostring(v))
         elseif type(v) == "function" then
-            print(formatting .. "FUNCTION")
+            self:log_str(formatting .. "FUNCTION")
         else
-            print(formatting .. v)
+            self:log_str(formatting .. v)
         end
     end
 end

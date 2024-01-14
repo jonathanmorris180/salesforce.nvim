@@ -25,7 +25,7 @@ function State:toggle()
 end
 
 function State:log()
-    D:log("main", "Salesforce is %s", self.enabled and "enabled" or "disabled")
+    D:log("state.lua", "Salesforce is %s", self.enabled and "enabled" or "disabled")
     return self
 end
 
