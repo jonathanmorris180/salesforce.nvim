@@ -3,19 +3,17 @@ local helpers = dofile("tests/helpers.lua")
 -- See https://github.com/echasnovski/mini.nvim/blob/main/lua/mini/test.lua for more documentation
 
 local child = helpers.new_child_neovim()
-local eq_global, eq_config, eq_state =
-    helpers.expect.global_equality, helpers.expect.config_equality, helpers.expect.state_equality
-local eq_type_global, eq_type_config, eq_type_state =
-    helpers.expect.global_type_equality,
-    helpers.expect.config_type_equality,
-    helpers.expect.state_type_equality
+local eq_config = helpers.expect.config_equality
+local eq_type_config = helpers.expect.config_type_equality
 
 local T = MiniTest.new_set({
     hooks = {
         -- This will be executed before every (even nested) case
         pre_case = function()
-            -- Restart child process with custom 'init.lua' script
+            -- Restart child process with minimal 'init.lua' script
             child.restart({ "-u", "scripts/minimal_init.lua" })
+            child.lua([[M = require("salesforce")]])
+            child.lua([[C = require("salesforce.config")]])
         end,
         -- This will be executed one after all tests from this set are finished
         post_once = child.stop,
@@ -26,33 +24,22 @@ local T = MiniTest.new_set({
 T["setup()"] = MiniTest.new_set()
 
 T["setup()"]["sets exposed methods and default options value"] = function()
-    child.lua([[require('salesforce').setup()]])
+    child.lua([[M.setup()]])
 
     -- global object that holds your plugin information
-    eq_type_global(child, "_G.Salesforce", "table")
-
-    -- public methods
-    eq_type_global(child, "_G.Salesforce.toggle", "function")
-    eq_type_global(child, "_G.Salesforce.disable", "function")
-    eq_type_global(child, "_G.Salesforce.enable", "function")
-
-    -- config
-    eq_type_global(child, "_G.Salesforce.config", "table")
-
-    -- assert the value, and the type
-    eq_config(child, "debug", false)
     eq_type_config(child, "debug", "boolean")
+    eq_config(child, "debug", false)
 end
 
 T["setup()"]["overrides default values"] = function()
-    child.lua([[require('salesforce').setup({
+    child.lua([[M.setup({
         -- write all the options with a value different than the default ones
         debug = true,
     })]])
 
     -- assert the value, and the type
-    eq_config(child, "debug", true)
     eq_type_config(child, "debug", "boolean")
+    eq_config(child, "debug", true)
 end
 
 return T

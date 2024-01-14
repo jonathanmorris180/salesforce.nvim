@@ -9,68 +9,26 @@ local function errorMessage(str, pattern)
     return string.format("Pattern: %s\nObserved string: %s", vim.inspect(pattern), str)
 end
 
--- Check equality of a global `field` against `value` in the given `child` process.
--- @usage global_equality(child, "_G.SalesforceLoaded", true)
-Helpers.expect.global_equality = MiniTest.new_expectation(
-    "variable in child process matches",
-    function(child, field, value)
-        return Helpers.expect.equality(child.lua_get(field), value)
-    end,
-    errorMessage
-)
-
--- Check type equality of a global `field` against `value` in the given `child` process.
--- @usage global_type_equality(child, "_G.SalesforceLoaded", "boolean")
-Helpers.expect.global_type_equality = MiniTest.new_expectation(
-    "variable type in child process matches",
-    function(child, field, value)
-        return Helpers.expect.global_equality(child, "type(" .. field .. ")", value)
-    end,
-    errorMessage
-)
-
--- Check equality of a config `field` against `value` in the given `child` process.
+-- Check equality of a config `prop` against `value` in the given `child` process.
 -- @usage option_equality(child, "debug", true)
 Helpers.expect.config_equality = MiniTest.new_expectation(
     "config option matches",
-    function(child, field, value)
-        return Helpers.expect.global_equality(child, "_G.Salesforce.config." .. field, value)
-    end,
-    errorMessage
-)
-
--- Check type equality of a config `field` against `value` in the given `child` process.
--- @usage config_type_equality(child, "debug", "boolean")
-Helpers.expect.config_type_equality = MiniTest.new_expectation(
-    "config option type matches",
-    function(child, field, value)
-        return Helpers.expect.global_equality(
-            child,
-            "type(_G.Salesforce.config." .. field .. ")",
+    function(child, prop, value)
+        return Helpers.expect.equality(
+            child.lua_get(string.format('C:get_options()["%s"]', prop)),
             value
         )
     end,
     errorMessage
 )
 
--- Check equality of a state `field` against `value` in the given `child` process.
--- @usage state_equality(child, "enabled", true)
-Helpers.expect.state_equality = MiniTest.new_expectation(
-    "state matches",
-    function(child, field, value)
-        return Helpers.expect.global_equality(child, "_G.Salesforce.enabled." .. field, value)
-    end,
-    errorMessage
-)
-
--- Check type equality of a state `field` against `value` in the given `child` process.
--- @usage state_type_equality(child, "enabled", "boolean")
-Helpers.expect.state_type_equality = MiniTest.new_expectation(
-    "state type matches",
-    function(child, field, value)
-        return Helpers.expect.global_equality(
-            child,
-            "type(_G.Salesforce.state." .. field .. ")",
+-- Check type equality of a config `prop` against `value` in the given `child` process.
+-- @usage config_type_equality(child, "debug", "boolean")
+Helpers.expect.config_type_equality = MiniTest.new_expectation(
+    "config option type matches",
+    function(child, prop, value)
+        return Helpers.expect.equality(
+            child.lua_get(string.format('type(C:get_options()["%s"])', prop)),
             value
         )
     end,
@@ -90,8 +48,9 @@ Helpers.new_child_neovim = function()
     local child = MiniTest.new_child_neovim()
 
     local prevent_hanging = function(method)
-    -- stylua: ignore
-    if not child.is_blocked() then return end
+        if not child.is_blocked() then
+            return
+        end
 
         local msg =
             string.format("Can not use `child.%s` because child process is blocked.", method)

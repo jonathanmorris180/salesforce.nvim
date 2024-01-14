@@ -1,6 +1,6 @@
 -- You can use this loaded variable to enable conditional parts of your plugin.
 local S = require("salesforce")
-local A = require("salesforce/execute-anon")
+local A = require("salesforce/execute_anon")
 
 vim.api.nvim_create_user_command("SalesforceToggle", function()
     S.toggle()

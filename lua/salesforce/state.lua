@@ -10,6 +10,10 @@ function State:new()
     return o
 end
 
+function State:is_enabled()
+    return self.enabled
+end
+
 ---Toggle the plugin by calling the `enable`/`disable` methods respectively.
 ---@private
 function State:toggle()
