@@ -6,6 +6,7 @@ vim.cmd([[let &rtp.=','.getcwd()]])
 -- Assumed that 'mini.nvim' is stored in 'deps/mini.nvim'
 vim.cmd("set rtp+=deps/mini.nvim")
 vim.cmd("set rtp+=deps/plenary.nvim")
+vim.cmd("set rtp+=deps/nvim-treesitter")
 
 -- Set up 'mini.test'
 require("mini.test").setup()

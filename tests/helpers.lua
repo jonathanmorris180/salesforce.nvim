@@ -4,8 +4,7 @@ local Helpers = {}
 -- Add extra expectations
 Helpers.expect = vim.deepcopy(MiniTest.expect)
 
--- The error message returned when a test fails.
-local function errorMessage(str, pattern)
+local function error_message(str, pattern)
     return string.format("Pattern: %s\nObserved string: %s", vim.inspect(pattern), str)
 end
 
@@ -19,7 +18,7 @@ Helpers.expect.config_equality = MiniTest.new_expectation(
             value
         )
     end,
-    errorMessage
+    error_message
 )
 
 -- Check type equality of a config `prop` against `value` in the given `child` process.
@@ -32,16 +31,16 @@ Helpers.expect.config_type_equality = MiniTest.new_expectation(
             value
         )
     end,
-    errorMessage
+    error_message
 )
 
 Helpers.expect.match = MiniTest.new_expectation("string matching", function(str, pattern)
     return str:find(pattern) ~= nil
-end, errorMessage)
+end, error_message)
 
 Helpers.expect.no_match = MiniTest.new_expectation("no string matching", function(str, pattern)
     return str:find(pattern) == nil
-end, errorMessage)
+end, error_message)
 
 Helpers.debug = function()
     local debug_val = vim.loop.os_environ()["DEBUG"]

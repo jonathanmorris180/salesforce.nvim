@@ -1,4 +1,4 @@
-local Debug = require("salesforce.util.debug")
+local Debug = require("salesforce.debug")
 local PlenaryJobMock = {}
 
 local mock_output = vim.fn.readfile("tests/resources/execute_anon/mock-output.txt")

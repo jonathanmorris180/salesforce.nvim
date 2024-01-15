@@ -1,5 +1,5 @@
 local Config = require("salesforce.config")
-local Debug = require("salesforce.util.debug")
+local Debug = require("salesforce.debug")
 local Popop = require("plenary.popup")
 
 local PopupManager = {}
@@ -45,14 +45,14 @@ function PopupManager:create_popup()
         self.bufnr,
         "n",
         "q",
-        "<cmd>lua require('salesforce.util.popup'):close_popup()<CR>",
+        "<cmd>lua require('salesforce.popup'):close_popup()<CR>",
         { noremap = true, silent = true }
     )
     vim.api.nvim_buf_set_keymap(
         self.bufnr,
         "n",
         "<esc>",
-        "<cmd>lua require('salesforce.util.popup'):close_popup()<CR>",
+        "<cmd>lua require('salesforce.popup'):close_popup()<CR>",
         { noremap = true, silent = true }
     )
 end
@@ -75,8 +75,13 @@ function PopupManager:clear_popup()
     end
 end
 
+function PopupManager:get_win_id()
+    return self.win_id
+end
+
 function PopupManager:close_popup()
-    Debug:log("popup", "Closing Salesforce popup")
+    Debug:log("popup.lua", "Closing Salesforce popup")
+    Debug:log("popup.lua", "win_id is %s", tostring(self.win_id))
     if self.win_id and vim.api.nvim_win_is_valid(self.win_id) then
         vim.api.nvim_win_close(self.win_id, { force = true })
         self.bufnr = nil

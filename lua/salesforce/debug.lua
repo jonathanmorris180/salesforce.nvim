@@ -25,10 +25,16 @@ function Debugger:log(scope, item, ...)
         return
     end
 
+    if type(item) == "nil" then
+        item = "nil"
+    end
+
     if type(item) == "table" then
         self:tprint(item)
         return
     end
+
+    print("select('#', ...)", select("#", ...))
 
     local info = debug.getinfo(2, "Sl")
     local line = ""
@@ -37,13 +43,10 @@ function Debugger:log(scope, item, ...)
         line = "L" .. info.currentline
     end
 
-    local debug_str = string.format(
-        "[salesforce:%s %s in %s] > %s",
-        os.date("%H:%M:%S"),
-        line,
-        scope,
-        (select("#", ...) == 0 and item) or string.format(item, ...)
-    )
+    local final_arg = (select("#", ...) == 0 and item) or string.format(item, ...)
+
+    local debug_str =
+        string.format("[salesforce:%s %s in %s] > %s", os.date("%H:%M:%S"), line, scope, final_arg)
     self:log_str(debug_str)
 end
 

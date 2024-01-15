@@ -1,5 +1,5 @@
-local Popup = require("salesforce.util.popup")
-local Debug = require("salesforce.util.debug")
+local Popup = require("salesforce.popup")
+local Debug = require("salesforce.debug")
 local Job = require("plenary.job")
 
 local M = {}

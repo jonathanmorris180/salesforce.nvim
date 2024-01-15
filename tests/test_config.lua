@@ -1,4 +1,5 @@
 local helpers = dofile("tests/helpers.lua")
+local Debug = require("salesforce.debug")
 
 -- See https://github.com/echasnovski/mini.nvim/blob/main/lua/mini/test.lua for more documentation
 
@@ -13,7 +14,7 @@ local T = MiniTest.new_set({
             -- Restart child process with minimal 'init.lua' script
             child.setup()
             child.lua([[M = require("salesforce")]])
-            child.lua([[C = require("salesforce.config")]])
+            child.lua([[C = require("salesforce.config")]]) -- needed for eq_config
         end,
         -- This will be executed one after all tests from this set are finished
         post_once = child.stop,
@@ -24,6 +25,7 @@ local T = MiniTest.new_set({
 T["setup()"] = MiniTest.new_set()
 
 T["setup()"]["sets exposed methods and default options value"] = function()
+    Debug:log("test_config.lua", "setup() test")
     child.lua([[M.setup()]])
 
     -- global object that holds your plugin information

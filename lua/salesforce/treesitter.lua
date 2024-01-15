@@ -47,20 +47,18 @@ local function has_istest_annotation(expr)
     return string.lower(vim.treesitter.get_node_text(name, 0)) == "istest"
 end
 
--- Get Current Method Name
-M.get_current_method_name = function()
+local get_declaration_name = function(type)
     local current_node = ts_utils.get_node_at_cursor()
     if not current_node then
         return nil
     end
 
-    local expr = find_parent_by_type(current_node, "method_declaration")
-
-    if not expr or not has_istest_annotation(expr) then
+    local declaration = find_parent_by_type(current_node, type)
+    if not declaration or not has_istest_annotation(declaration) then
         return nil
     end
 
-    local name = find_child_by_type(expr, "identifier")
+    local name = find_child_by_type(declaration, "identifier")
     if not name then
         return nil
     end
@@ -68,23 +66,12 @@ M.get_current_method_name = function()
     return vim.treesitter.get_node_text(name, 0)
 end
 
--- Get Current Class Name
 M.get_current_class_name = function()
-    local current_node = ts_utils.get_node_at_cursor()
-    if not current_node then
-        return nil
-    end
+    return get_declaration_name("class_declaration")
+end
 
-    local class_declaration = find_parent_by_type(current_node, "class_declaration")
-    if not class_declaration then
-        return nil
-    end
-
-    local child = find_child_by_type(class_declaration, "identifier")
-    if not child then
-        return nil
-    end
-    return vim.treesitter.get_node_text(child, 0)
+M.get_current_method_name = function()
+    return get_declaration_name("method_declaration")
 end
 
 return M

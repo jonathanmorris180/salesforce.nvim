@@ -42,6 +42,11 @@ T["execute_anon()"]["displays a mock value in the scratch buffer"] = function()
     child.lua([[
         dofile("tests/resources/execute_anon/plenary_override.lua")
     ]])
+    -- adding here to avoid "same file is required with different names" error
+    child.lua([[
+        package.loaded["plenary.job"] = require("mocks.plenary.job")
+        require("plenary.reload").reload_module("salesforce.execute_anon")
+    ]])
     child.cmd(string.format("e %s", test_dir))
     child.bo.filetype = "apex"
     child.lua([[ require("salesforce.execute_anon").execute_anon() ]]) -- important to not require this in the pre_case setup
