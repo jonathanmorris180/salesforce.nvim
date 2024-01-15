@@ -1,3 +1,6 @@
+local C = require("salesforce.config")
+local P = require("plenary.popup")
+
 local ScratchBufferCreator = {}
 
 function ScratchBufferCreator:new()

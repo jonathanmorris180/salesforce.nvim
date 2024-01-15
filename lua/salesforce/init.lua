@@ -1,5 +1,6 @@
 local C = require("salesforce.config")
 local S = require("salesforce.state")
+
 local Salesforce = {}
 
 -- setup Salesforce options and merge them with user provided ones.

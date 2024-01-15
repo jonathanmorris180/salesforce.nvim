@@ -8,6 +8,14 @@ function Config:new()
     o.options = {
         -- Prints useful logs about what event are triggered, and reasons actions are executed.
         debug = false,
+        popup = {
+            -- The width of the popup window.
+            width = 80,
+            -- The height of the popup window.
+            height = 20,
+            -- The border characters to use for the popup window
+            borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+        },
     }
     return o
 end
