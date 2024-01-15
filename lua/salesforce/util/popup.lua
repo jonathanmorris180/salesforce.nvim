@@ -1,6 +1,6 @@
 local Config = require("salesforce.config")
 local Debug = require("salesforce.util.debug")
-local P = require("plenary.popup")
+local Popop = require("plenary.popup")
 
 local PopupManager = {}
 
@@ -19,7 +19,7 @@ function PopupManager:create_window()
     local borderchars = config.borderchars
     self.bufnr = vim.api.nvim_create_buf(false, true)
 
-    local win_id = P.create(self.bufnr, {
+    local win_id = Popop.create(self.bufnr, {
         title = "Salesforce",
         line = math.floor(((vim.o.lines - height) / 2) - 1),
         col = math.floor((vim.o.columns - width) / 2),
@@ -32,9 +32,11 @@ function PopupManager:create_window()
 end
 
 function PopupManager:create_popup()
-    if self.win_id == nil or not vim.api.nvim_buf_is_valid(self.win_id) then
-        self.win_id = self:create_window()
+    if self.win_id and self.bufnr then
+        return
     end
+
+    self.win_id = self:create_window()
 
     vim.api.nvim_buf_set_option(self.bufnr, "bufhidden", "delete")
     vim.api.nvim_buf_set_option(self.bufnr, "modifiable", false)
@@ -74,6 +76,7 @@ function PopupManager:clear_popup()
 end
 
 function PopupManager:close_popup()
+    Debug:log("popup", "Closing Salesforce popup")
     if self.win_id and vim.api.nvim_win_is_valid(self.win_id) then
         vim.api.nvim_win_close(self.win_id, { force = true })
         self.bufnr = nil

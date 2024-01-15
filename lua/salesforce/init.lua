@@ -1,5 +1,4 @@
 local Config = require("salesforce.config")
-local State = require("salesforce.state")
 
 local Salesforce = {}
 
@@ -7,12 +6,5 @@ local Salesforce = {}
 function Salesforce.setup(opts)
     Salesforce.config = Config:setup(opts)
 end
-
-function Salesforce.toggle()
-    State:toggle()
-end
-
--- enable by default
-State:enable()
 
 return Salesforce
