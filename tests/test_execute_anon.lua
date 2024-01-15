@@ -9,7 +9,6 @@ local T = MiniTest.new_set({
             -- Restart child process with minimal 'init.lua' script
             child.setup()
             child.lua([[M = require("salesforce")]])
-            child.lua([[A = require("salesforce.execute_anon")]])
         end,
         -- This will be executed one after all tests from this set are finished
         post_once = child.stop,
@@ -20,17 +19,13 @@ local mock_output = vim.fn.readfile("tests/resources/execute_anon/mock-output.tx
 mock_output = table.concat(mock_output)
 local test_dir = "tests/resources/execute_anon/example.apex"
 
-local mock_system_call = function()
-    local mock = string.format(
-        [[
-        _G.system_orig = _G.system_orig or vim.fn.system
-        vim.fn.system = function(...) 
-            _G.system_args = {...}
-            return "%s" 
+local mock_schedule = function()
+    local mock = [[
+        _G.schedule_orig = vim.schedule
+        vim.schedule = function(func) 
+            func()
         end
-        ]],
-        mock_output
-    )
+    ]]
     child.lua(mock)
 end
 
@@ -42,11 +37,14 @@ end
 T["execute_anon()"] = MiniTest.new_set()
 
 T["execute_anon()"]["displays a mock value in the scratch buffer"] = function()
-    mock_system_call()
+    mock_schedule()
     child.lua(string.format([[M.setup({debug = %s})]], tostring(helpers.debug())))
+    child.lua([[
+        dofile("tests/resources/execute_anon/plenary_override.lua")
+    ]])
     child.cmd(string.format("e %s", test_dir))
     child.bo.filetype = "apex"
-    child.lua([[A.execute_anon()]])
+    child.lua([[ require("salesforce.execute_anon").execute_anon() ]]) -- important to not require this in the pre_case setup
 
     local buff_content = get_buf_content()
     helpers.expect.equality(buff_content, mock_output)

@@ -42,7 +42,7 @@ function Debugger:log(scope, item, ...)
         os.date("%H:%M:%S"),
         line,
         scope,
-        select("#", ...) == 0 and item or string.format(item, ...)
+        (select("#", ...) == 0 and item) or string.format(item, ...)
     )
     self:log_str(debug_str)
 end
