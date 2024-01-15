@@ -1,10 +1,11 @@
-local SB = require("salesforce.util.scratch")
-local D = require("salesforce.util.debug")
+local Popup = require("salesforce.util.popup")
+local Debug = require("salesforce.util.debug")
+local Job = require("plenary.job")
 
 local M = {}
 
 M.execute_anon = function()
-    D:log("execute_anon.lua", "Executing anonymous Apex script...")
+    Debug:log("execute_anon.lua", "Executing anonymous Apex script...")
     local path = vim.fn.expand("%:p")
     local file_type = vim.fn.expand("%:e")
 
@@ -13,13 +14,27 @@ M.execute_anon = function()
         return
     end
 
+    Popup:create_popup()
+    Popup:write_to_popup("Executing anonymous Apex script...")
     local command = "sf apex run -f " .. path
-    D:log("execute_anon.lua", "Running " .. command .. "...")
-    local output = vim.fn.system(command)
-    D:log("execute_anon.lua", "Command output is: %s", output)
-    D:log("execute_anon.lua", "Adding output to scratch buffer...")
-    SB:create_scratch() -- this ensures the same buffer is reused
-    SB:write_to_scratch(output)
+    Debug:log("execute_anon.lua", "Running " .. command .. "...")
+    Job:new({
+        command = "sf",
+        args = { "apex", "run", "-f", path },
+        on_exit = function(j)
+            vim.schedule(function()
+                Debug:log("execute_anon.lua", "Result from command:")
+                Debug:log("execute_anon.lua", j:result())
+                Popup:write_to_popup(j:result())
+            end)
+        end,
+        on_stderr = function(_, data)
+            vim.schedule(function()
+                Debug:log("execute_anon.lua", "Command stderr is: %s", data)
+                Popup:write_to_popup(data)
+            end)
+        end,
+    }):start()
 end
 
 return M

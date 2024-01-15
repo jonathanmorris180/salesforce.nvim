@@ -1,5 +1,5 @@
-local SB = require("salesforce.util.scratch")
-local D = require("salesforce.util.debug")
+local Popup = require("salesforce.util.popup")
+local Debug = require("salesforce.util.debug")
 
 local run_class_command = 'sf apex run test -n "%s" --synchronous -r human'
 local run_method_command = 'sf apex run test -t "%s.%s" --synchronous -r human'
@@ -16,12 +16,12 @@ M.execute_current_method = function()
     end
 
     local command = "sf apex run -f " .. path
-    D:log("execute_anon.lua", "Running " .. command .. "...")
+    Debug:log("execute_anon.lua", "Running " .. command .. "...")
     local output = vim.fn.system(command)
-    D:log("execute_anon.lua", "Command output is: %s", output)
-    D:log("execute_anon.lua", "Adding output to scratch buffer...")
-    SB:create_scratch() -- this ensures the same buffer is reused
-    SB:write_to_scratch(output)
+    Debug:log("execute_anon.lua", "Command output is: %s", output)
+    Debug:log("execute_anon.lua", "Adding output to popup buffer...")
+    Popup:create_popup() -- this ensures the same buffer is reused
+    Popup:write_to_popup(output)
 end
 
 return M

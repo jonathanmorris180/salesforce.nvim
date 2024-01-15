@@ -1,4 +1,4 @@
-local D = require("salesforce.util.debug")
+local Debug = require("salesforce.util.debug")
 local State = {}
 
 function State:new()
@@ -25,7 +25,7 @@ function State:toggle()
 end
 
 function State:log()
-    D:log("state.lua", "Salesforce is %s", self.enabled and "enabled" or "disabled")
+    Debug:log("state.lua", "Salesforce is %s", self.enabled and "enabled" or "disabled")
     return self
 end
 

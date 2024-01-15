@@ -1,4 +1,4 @@
-local C = require("salesforce.config")
+local Config = require("salesforce.config")
 local Debugger = {}
 
 function Debugger:new()
@@ -17,11 +17,16 @@ end
 ---prints only if debug is true.
 ---
 ---@param scope string: the scope from where this function is called.
----@param str string: the formatted string.
+---@param item string | table: the item to log.
 ---@param ... any: the arguments of the formatted string.
 ---@private
-function Debugger:log(scope, str, ...)
-    if not C:get_options().debug then
+function Debugger:log(scope, item, ...)
+    if not Config:get_options().debug then
+        return
+    end
+
+    if type(item) == "table" then
+        self:tprint(item)
         return
     end
 
@@ -37,14 +42,13 @@ function Debugger:log(scope, str, ...)
         os.date("%H:%M:%S"),
         line,
         scope,
-        select("#", ...) == 0 and str or string.format(str, ...)
+        select("#", ...) == 0 and item or string.format(item, ...)
     )
     self:log_str(debug_str)
 end
 
 function Debugger:log_str(debug_str)
     print(debug_str)
-    print("Logging to " .. self.log_file_path)
     vim.fn.writefile({ debug_str }, self.log_file_path, "a")
 end
 
@@ -54,7 +58,7 @@ end
 ---@param indent number?: the default indent value, starts at 0.
 ---@private
 function Debugger:tprint(table, indent)
-    if not C:get_options().debug then
+    if not Config:get_options().debug then
         return
     end
 
