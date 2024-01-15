@@ -67,7 +67,7 @@ M.execute_current_method = function()
     local method_name = class_info.method_name
 
     local command = run_method_command:format(class_name, method_name)
-    Popup:create_popup()
+    Popup:create_popup({})
     Popup:write_to_popup(string.format("Executing %s.%s...", class_name, method_name))
     Debug:log("test_runner.lua", "Running command: " .. command)
     execute_job(command)
@@ -83,7 +83,7 @@ M.execute_current_class = function()
 
     local class_name = class_info.class_name
     local command = run_class_command:format(class_name)
-    Popup:create_popup()
+    Popup:create_popup({})
     Popup:write_to_popup(string.format("Executing %s...", class_name))
     Debug:log("test_runner.lua", "Running command: " .. command)
     execute_job(command)

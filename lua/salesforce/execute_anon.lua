@@ -14,7 +14,7 @@ M.execute_anon = function()
         return
     end
 
-    Popup:create_popup()
+    Popup:create_popup({})
     Popup:write_to_popup("Executing anonymous Apex script...")
     local command = "sf apex run -f " .. path
     Debug:log("execute_anon.lua", "Running " .. command .. "...")
