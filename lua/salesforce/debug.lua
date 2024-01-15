@@ -34,8 +34,6 @@ function Debugger:log(scope, item, ...)
         return
     end
 
-    print("select('#', ...)", select("#", ...))
-
     local info = debug.getinfo(2, "Sl")
     local line = ""
 

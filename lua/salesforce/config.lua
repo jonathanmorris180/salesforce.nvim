@@ -16,6 +16,9 @@ function Config:new()
             -- The border characters to use for the popup window
             borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
         },
+        file_manager = {
+            ignore_conflicts = false,
+        },
     }
     return o
 end
