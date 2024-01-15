@@ -3,9 +3,16 @@ local Testrunner = require("salesforce.test_runner")
 local Popup = require("salesforce.popup")
 local FileManager = require("salesforce.file_manager")
 local Diff = require("salesforce.diff")
+local Config = require("salesforce.config")
 
 vim.api.nvim_create_user_command("SalesfoceExecuteFile", function()
     Anon.execute_anon()
+end, {})
+
+vim.api.nvim_create_user_command("SalesforceToggleDebug", function()
+    local new_val = not Config:get_options().debug
+    Config:get_options().debug = new_val
+    vim.notify("Salesforce debugging is " .. (new_val and "enabled" or "disabled"))
 end, {})
 
 vim.api.nvim_create_user_command("SalesforceClosePopup", function()

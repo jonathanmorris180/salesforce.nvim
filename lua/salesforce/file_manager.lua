@@ -119,7 +119,7 @@ M.push_to_org = function()
 
     Util.clear_and_notify("Pushing " .. file_name .. " to the org...")
     local command = string.format("sf project deploy start -d %s --json", path)
-    Debug:log("Command: " .. command)
+    Debug:log("file_manager.lua", "Command: " .. command)
     push(command)
 end
 
@@ -129,7 +129,7 @@ M.pull_from_org = function()
 
     Util.clear_and_notify("Pulling " .. file_name .. " from the org...")
     local command = string.format("sf project retrieve start -d %s --json", path)
-    Debug:log("Command: " .. command)
+    Debug:log("file_manager.lua", "Command: " .. command)
     if Config:get_options().file_manager.ignore_conflicts then
         Debug:log("file_manager.lua", "Ignoring conflicts becuase of config option")
         command = command .. " --ignore-conflicts"
