@@ -1,5 +1,6 @@
 # we disable the `all` command because some external tool might run it automatically
 .SUFFIXES:
+.PHONY: deps
 
 all:
 
@@ -16,7 +17,8 @@ test-debug:
 # installs `mini.nvim`, used for both the tests and documentation.
 deps:
 	@mkdir -p deps
-	git clone --depth 1 https://github.com/echasnovski/mini.nvim deps/mini.nvim
+	@test -d deps/mini.nvim || git clone --depth 1 https://github.com/echasnovski/mini.nvim deps/mini.nvim
+	@test -d deps/plenary.nvim || git clone --depth 1 https://github.com/nvim-lua/plenary.nvim.git deps/plenary.nvim
 
 # installs deps before running tests, useful for the CI.
 test-ci: deps test

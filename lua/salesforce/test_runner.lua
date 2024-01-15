@@ -20,7 +20,7 @@ M.execute_current_method = function()
     local output = vim.fn.system(command)
     Debug:log("execute_anon.lua", "Command output is: %s", output)
     Debug:log("execute_anon.lua", "Adding output to popup buffer...")
-    Popup:create_popup() -- this ensures the same buffer is reused
+    Popup:create_popup()
     Popup:write_to_popup(output)
 end
 

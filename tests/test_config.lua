@@ -33,7 +33,6 @@ end
 
 T["setup()"]["overrides default values"] = function()
     child.lua([[M.setup({
-        -- write all the options with a value different than the default ones
         debug = true,
     })]])
 
