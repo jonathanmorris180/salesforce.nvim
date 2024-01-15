@@ -31,7 +31,7 @@ vim.api.nvim_create_user_command("SalesforcePushToOrg", function()
     FileManager.push_to_org()
 end, {})
 
-vim.api.nvim_create_user_command("SalesforcePullFromOrg", function()
+vim.api.nvim_create_user_command("SalesforceRetrieveFromOrg", function()
     FileManager.pull_from_org()
 end, {})
 
