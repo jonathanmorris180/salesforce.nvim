@@ -1,2 +1,4 @@
-Salesforce.options	salesforce.txt	/*Salesforce.options*
+Config	salesforce.txt	/*Config*
+Salesforce	salesforce.txt	/*Salesforce*
 Salesforce.setup()	salesforce.txt	/*Salesforce.setup()*
+salesforce.nvim	salesforce.txt	/*salesforce.nvim*

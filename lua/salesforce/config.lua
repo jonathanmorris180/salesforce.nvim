@@ -30,11 +30,6 @@ function Config:get_options()
     return self.options
 end
 
---- Setup function
----
----@param options table Module config table. See |Config.options|.
----
----@usage `require("salesforce").setup()` (add `{}` with your |Config.options| table)
 function Config:setup(options)
     options = options or {}
     self.options = vim.tbl_deep_extend("keep", options, self.options)

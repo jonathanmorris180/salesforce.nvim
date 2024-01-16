@@ -4,7 +4,6 @@ local Popup = require("salesforce.popup")
 local FileManager = require("salesforce.file_manager")
 local Diff = require("salesforce.diff")
 local Config = require("salesforce.config")
-local OrgManager = require("salesforce.org_manager")
 
 vim.api.nvim_create_user_command("SalesforceExecuteFile", function()
     Anon.execute_anon()
@@ -38,8 +37,4 @@ end, {})
 
 vim.api.nvim_create_user_command("SalesforceDiffFile", function()
     Diff.diff_with_org()
-end, {})
-
-vim.api.nvim_create_user_command("SalesforceSetDefaultOrg", function()
-    OrgManager:set_default_org()
 end, {})
