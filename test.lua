@@ -1,5 +1,0 @@
-vim.notify("hi")
-vim.fn.feedkeys(":", "nx")
-vim.notify("hi")
-vim.fn.feedkeys(":", "nx")
-vim.notify("hello")

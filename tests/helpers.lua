@@ -9,7 +9,7 @@ local function error_message(str, pattern)
 end
 
 -- Check equality of a config `prop` against `value` in the given `child` process.
--- @usage option_equality(child, "debug", true)
+-- @usage config_equality(child, "debug", true)
 Helpers.expect.config_equality = MiniTest.new_expectation(
     "config option matches",
     function(child, prop, value)
@@ -51,16 +51,6 @@ end
 Helpers.new_child_neovim = function()
     local child = MiniTest.new_child_neovim()
 
-    local prevent_hanging = function(method)
-        if not child.is_blocked() then
-            return
-        end
-
-        local msg =
-            string.format("Can not use `child.%s` because child process is blocked.", method)
-        error(msg)
-    end
-
     child.setup = function()
         child.restart({ "-u", "scripts/minimal_init.lua" })
 
@@ -70,8 +60,6 @@ Helpers.new_child_neovim = function()
     end
 
     child.set_lines = function(arr, start, finish)
-        prevent_hanging("set_lines")
-
         if type(arr) == "string" then
             arr = vim.split(arr, "\n")
         end
@@ -80,26 +68,18 @@ Helpers.new_child_neovim = function()
     end
 
     child.get_lines = function(start, finish)
-        prevent_hanging("get_lines")
-
         return child.api.nvim_buf_get_lines(0, start or 0, finish or -1, false)
     end
 
     child.set_cursor = function(line, column, win_id)
-        prevent_hanging("set_cursor")
-
         child.api.nvim_win_set_cursor(win_id or 0, { line, column })
     end
 
     child.get_cursor = function(win_id)
-        prevent_hanging("get_cursor")
-
         return child.api.nvim_win_get_cursor(win_id or 0)
     end
 
     child.set_size = function(lines, columns)
-        prevent_hanging("set_size")
-
         if type(lines) == "number" then
             child.o.lines = lines
         end
@@ -110,8 +90,6 @@ Helpers.new_child_neovim = function()
     end
 
     child.get_size = function()
-        prevent_hanging("get_size")
-
         return { child.o.lines, child.o.columns }
     end
 

@@ -1,4 +1,4 @@
-name: main
+name: Main
 
 on:
   push:
@@ -6,17 +6,19 @@ on:
   pull_request:
     types: [opened, synchronize]
 
+permissions:
+  contents: write
+
 concurrency:
-  group: github.head_ref
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.actor }}
   cancel-in-progress: true
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
-    name: lint
     steps:
       - uses: actions/checkout@v3
-
       - uses: JohnnyMorganz/stylua-action@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -24,71 +26,65 @@ jobs:
           args: --check .
 
   documentation:
+    name: Docs
     runs-on: ubuntu-latest
-    name: documentation
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 2
-
-      - name: setup neovim
+      - name: Set up Neovim
         uses: rhysd/action-setup-vim@v1
         with:
           neovim: true
           version: v0.8.3
-
-      - name: generate documentation
+      - name: Generate documentation
         run: make documentation-ci
-
       - name: check docs diff
         run: exit $(git status --porcelain doc | wc -l | tr -d " ")
 
-  tests:
-    needs: 
-      - lint
-      - documentation
-    runs-on: ubuntu-latest
-    timeout-minutes: 2
-    strategy:
-      matrix:
-        neovim_version: ['v0.7.2', 'v0.8.3', 'v0.9.1', 'nightly']
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - run: date +%F > todays-date
-
-      - name: restore cache for today's nightly.
-        uses: actions/cache@v3
-        with:
-          path: _neovim
-          key: ${{ runner.os }}-x64-${{ hashFiles('todays-date') }}
-
-      - name: setup neovim
-        uses: rhysd/action-setup-vim@v1
-        with:
-          neovim: true
-          version: ${{ matrix.neovim_version }}
-
-      - name: run tests
-        run: make test-ci
+  # disabling tests until mini.nvim can be run in CI
+  # tests:
+  #   name: Run tests
+  #   needs:
+  #     - lint
+  #     - documentation
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 2
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       neovim_version: ["v0.7.2", "v0.8.3", "v0.9.4", "nightly"]
+  #
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - run: date +%F > todays-date
+  #     - name: restore cache for today's nightly.
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: _neovim
+  #         key: ${{ runner.os }}-x64-${{ hashFiles('todays-date') }}
+  #     - name: Setup Neovim
+  #       uses: rhysd/action-setup-vim@v1
+  #       with:
+  #         neovim: true
+  #         version: ${{ matrix.neovim_version }}
+  #     - name: Run tests
+  #       run: make test-ci
 
   release:
-    name: release
+    name: Release
     if: ${{ github.ref == 'refs/heads/main' }}
-    needs:
-      - tests
+    # needs:
+    #   - tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-
       - uses: google-github-actions/release-please-action@v3
         id: release
         with:
           release-type: simple
           package-name: salesforce.nvim
-
-      - name: tag stable versions
+      - name: Tag stable versions
         if: ${{ steps.release.outputs.release_created }}
         run: |
           git config user.name github-actions[bot]

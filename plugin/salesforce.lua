@@ -5,6 +5,9 @@ local FileManager = require("salesforce.file_manager")
 local Diff = require("salesforce.diff")
 local Config = require("salesforce.config")
 local OrgManager = require("salesforce.org_manager")
+local Debug = require("salesforce.debug")
+
+Debug:log("salesforce.lua", "Initializing Salesforce plugin commands...")
 
 vim.api.nvim_create_user_command("SalesforceExecuteFile", function()
     Anon.execute_anon()

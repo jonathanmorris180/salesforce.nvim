@@ -6,11 +6,9 @@ local T = MiniTest.new_set({
     hooks = {
         -- This will be executed before every (even nested) case
         pre_case = function()
-            -- Restart child process with minimal 'init.lua' script
             child.setup()
             child.lua([[M = require("salesforce")]])
         end,
-        -- This will be executed one after all tests from this set are finished
         post_once = child.stop,
     },
 })
