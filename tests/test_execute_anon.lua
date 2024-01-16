@@ -31,7 +31,7 @@ end
 
 local get_buf_content = function()
     local buff_content = child.api.nvim_buf_get_lines(0, 0, -1, false)
-    return table.concat(buff_content, "\n")
+    return table.concat(buff_content)
 end
 
 T["execute_anon()"] = MiniTest.new_set()

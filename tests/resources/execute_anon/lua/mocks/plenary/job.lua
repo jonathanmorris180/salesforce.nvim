@@ -2,7 +2,6 @@ local Debug = require("salesforce.debug")
 local PlenaryJobMock = {}
 
 local mock_output = vim.fn.readfile("tests/resources/execute_anon/mock-output.txt")
-mock_output = table.concat(mock_output)
 
 function PlenaryJobMock:new(args)
     Debug:log("Mock plenary.job", "Creating new instance")
@@ -18,7 +17,7 @@ function PlenaryJobMock:result()
 end
 
 function PlenaryJobMock:start()
-    self.on_exit(self)
+    self.on_exit(self, 0)
 end
 
 return PlenaryJobMock

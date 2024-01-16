@@ -14,7 +14,7 @@ local T = MiniTest.new_set({
             -- Restart child process with minimal 'init.lua' script
             child.setup()
             child.lua([[M = require("salesforce")]])
-            child.lua([[C = require("salesforce.config")]]) -- needed for eq_config
+            child.lua([[C = require("salesforce.config")]])
         end,
         -- This will be executed one after all tests from this set are finished
         post_once = child.stop,
