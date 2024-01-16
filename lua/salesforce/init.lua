@@ -1,4 +1,4 @@
---- *salesforce.nvim* Developing Salesforce applications with Neovim
+--- *salesforce.nvim* Plugin for developing Salesforce applications with Neovim
 --- *Salesforce*
 ---
 --- MIT License Copyright (c) 2024 Jonathan Morris
@@ -6,7 +6,7 @@
 --- ==============================================================================
 ---
 --- Provides a set of utilities that emulate the commands of the Salesforce
---- extension for VSCode. Out of the box commands include:
+--- extension for VS Code. Out of the box commands include:
 --- - `SalesforceExecuteFile`: Execute the current file as anonymous Apex
 --- - `SalesforceToggleDebug`: Toggle debug logging (this can also be set in |Salesforce.setup|)
 --- - `SalesforceClosePopup`: Close the popup window (useful in case you navigated away from it)
@@ -22,7 +22,7 @@
 --- You can pass in a lua table of options to customize the plugin. The default options are:
 --- >
 --- {
----     -- Prints useful logs about what event are triggered, and reasons actions are executed.
+---     -- Prints useful logs about what events are triggered, as well as outputs of the Salesforce CLI
 ---     debug = false,
 ---     popup = {
 ---         -- The width of the popup window.

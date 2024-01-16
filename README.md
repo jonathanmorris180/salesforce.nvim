@@ -2,29 +2,24 @@
   <h1 align="center">salesforce.nvim</h2>
 </p>
 
-<p align="center">
-    > A catch phrase that describes your plugin.
-</p>
-
 <div align="center">
-    > Drag your video (<10MB) here to host it for free on GitHub.
-</div>
-
-<div align="center">
-
-> Videos don't work on GitHub mobile, so a GIF alternative can help users.
-
-_[GIF version of the showcase video for mobile users](SHOWCASE_GIF_LINK)_
-
+    A plugin for developing Salesforce applications within Neovim
 </div>
 
 ## ⚡️ Features
 
-> Write short sentences describing your plugin features
+Provides a set of utilities that emulate the commands of the Salesforce
+extension for VS Code. Out of the box commands include:
 
-- FEATURE 1
-- FEATURE ..
-- FEATURE N
+- `:SalesforceExecuteFile`: Execute the current file as anonymous Apex
+- `:SalesforceToggleDebug`: Toggle debug logging (this can also be set in the config options)
+- `:SalesforceClosePopup`: Close the popup window (useful in case you navigated away from it)
+- `:SalesforceExecuteCurrentMethod`: Execute the test method under the cursor
+- `:SalesforceExecuteCurrentClass`: Execute all test methods in the current class
+- `:SalesforcePushToOrg`: Push the current file to the org
+- `:SalesforceRetrieveFromOrg`: Pull the current file from the org
+- `:SalesforceDiffFile`: Diff the current file against the file in the org
+- `:SalesforceSetDefaultOrg`: Set the default org for the current project
 
 ## 📋 Installation
 
@@ -46,10 +41,7 @@ _[GIF version of the showcase video for mobile users](SHOWCASE_GIF_LINK)_
 <td>
 
 ```lua
--- stable version
-use {"salesforce.nvim", tag = "*" }
--- dev version
-use {"salesforce.nvim"}
+use {"salesforce.nvim" }
 ```
 
 </td>
@@ -63,9 +55,6 @@ use {"salesforce.nvim"}
 <td>
 
 ```lua
--- stable version
-Plug "salesforce.nvim", { "tag": "*" }
--- dev version
 Plug "salesforce.nvim"
 ```
 
@@ -80,9 +69,6 @@ Plug "salesforce.nvim"
 <td>
 
 ```lua
--- stable version
-require("lazy").setup({{"salesforce.nvim", version = "*"}})
--- dev version
 require("lazy").setup({"salesforce.nvim"})
 ```
 
@@ -94,39 +80,60 @@ require("lazy").setup({"salesforce.nvim"})
 
 ## ☄ Getting started
 
-> Describe how to use the plugin the simplest way
+To use this plugin, ensure you have the Salesforce CLI installed on your machine. If you don't have it installed, you can do so [here](https://developer.salesforce.com/tools/salesforcecli).
 
 ## ⚙ Configuration
 
-> The configuration list sometimes become cumbersome, making it folded by default reduce the noise of the README file.
+There are a number of options available to configure `salesforce.nvim`.
 
-<details>
-<summary>Click to unfold the full list of options with their default values</summary>
-
-> **Note**: The options are also available in Neovim by calling `:h salesforce.options`
+> **Note**: The options are also available in Neovim at `:h salesforce`
 
 ```lua
 require("salesforce").setup({
-    -- you can copy the full list from lua/salesforce/config.lua
+    -- Prints useful logs about what events are triggered, as well as outputs of the Salesforce CLI
+    debug = false,
+    popup = {
+        -- The width of the popup window.
+        width = 100,
+        -- The height of the popup window.
+        height = 20,
+        -- The border characters to use for the popup window
+        borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+    },
+    file_manager = {
+        ignore_conflicts = false,
+    },
+    org_manager = {
+        default_org_indicator = "󰄬",
+    },
 })
 ```
 
-</details>
+To add the default org to lualine, add the table with `require` below to `lualine.setup` (copy from here to include the Salesforce nerd font icon):
 
-## 🧰 Commands
-
-|   Command   |         Description        |
-|-------------|----------------------------|
-|  `:Toggle`  |     Enables the plugin.    |
+```lua
+lualine.setup({
+    -- include the rest of your setup
+    sections = {
+        lualine_c = {
+            "filename",
+            {
+                "require'salesforce.org_manager':get_default_alias()",
+                icon = "󰢎",
+            },
+        },
+    },
+})
+```
 
 ## ⌨ Contributing
 
-PRs and issues are always welcome. Make sure to provide as much context as possible when opening one.
+PRs and issues are always welcome. Make sure to provide as much context as possible and follow the template when opening one.
 
-## 🗞 Wiki
+## 🎭 Debugging
 
-You can find guides and showcase of the plugin on [the Wiki](https://github.com/jonathanmorris180/salesforce.nvim/wiki)
+When debugging is enabled via `:SalesforceToggleDebug`, the log file is written to
 
-## 🎭 Motivations
-
-> If alternatives of your plugin exist, you can provide some pros/cons of using yours over the others.
+```lua
+vim.fn.stdpath("cache") .. "/salesforce.log"
+```

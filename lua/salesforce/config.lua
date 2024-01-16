@@ -6,7 +6,6 @@ function Config:new()
     self.__index = self
     -- default config values
     o.options = {
-        -- Prints useful logs about what event are triggered, and reasons actions are executed.
         debug = false,
         popup = {
             -- The width of the popup window.
