@@ -23,6 +23,8 @@ extension for VS Code. Out of the box commands include:
 
 ## 📋 Installation
 
+A minimal configuration is as follows:
+
 <div align="center">
 <table>
 <thead>
@@ -41,7 +43,13 @@ extension for VS Code. Out of the box commands include:
 <td>
 
 ```lua
-use {"salesforce.nvim" }
+use {
+    "salesforce.nvim",
+    requires = {
+        "nvim-lua/plenary.nvim",
+        "nvim-treesitter/nvim-treesitter"
+    }
+}
 ```
 
 </td>
@@ -56,6 +64,8 @@ use {"salesforce.nvim" }
 
 ```lua
 Plug "salesforce.nvim"
+    Plug "nvim-lua/plenary.nvim"
+    Plug "nvim-treesitter/nvim-treesitter"
 ```
 
 </td>
@@ -69,7 +79,13 @@ Plug "salesforce.nvim"
 <td>
 
 ```lua
-require("lazy").setup({"salesforce.nvim"})
+require("lazy").setup({
+    "salesforce.nvim",
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+        "nvim-treesitter/nvim-treesitter",
+    }
+})
 ```
 
 </td>
@@ -84,7 +100,7 @@ To use this plugin, ensure you have the Salesforce CLI installed on your machine
 
 ## ⚙ Configuration
 
-There are a number of options available to configure `salesforce.nvim`.
+There are a number of options available to configure `salesforce.nvim`. See the defaults below.
 
 > **Note**: The options are also available in Neovim at `:h salesforce`
 
