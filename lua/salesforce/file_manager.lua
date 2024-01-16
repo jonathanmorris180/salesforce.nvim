@@ -31,8 +31,24 @@ local function push_to_org_callback(j)
                 end
             end
         elseif sfdx_response.status and sfdx_response.status == 1 then
-            vim.notify(sfdx_response.message, vim.log.levels.ERROR)
-            return
+            if
+                sfdx_response.result
+                and sfdx_response.result.details
+                and sfdx_response.result.details.componentFailures
+            then
+                local failures = {}
+                for _, failure in ipairs(sfdx_response.result.details.componentFailures) do
+                    if failure.problem then
+                        table.insert(failures, failure.problem)
+                    end
+                end
+                vim.notify("Error(s) while pushing " .. file_name, vim.log.levels.ERROR)
+                vim.notify(table.concat(failures, "\n"), vim.log.levels.ERROR)
+                return
+            elseif sfdx_response.message then
+                vim.notify(sfdx_response.message, vim.log.levels.ERROR)
+                return
+            end
         elseif sfdx_response.status and sfdx_response.status == 0 then
             Util.clear_and_notify("Pushed " .. file_name .. " successfully!")
             return
@@ -77,6 +93,18 @@ local function pull_from_org_callback(j)
                     return
                 end
             end
+        elseif sfdx_response.status and sfdx_response.status == 1 and sfdx_response.message then
+            vim.notify(sfdx_response.message, vim.log.levels.ERROR)
+            return
+        end
+
+        if
+            sfdx_response.result
+            and sfdx_response.result.files
+            and #sfdx_response.result.files == 0
+        then
+            vim.notify("No changes to pull", vim.log.levels.ERROR)
+            return
         end
         vim.cmd("e!")
         Util.clear_and_notify("Pulled " .. file_name .. " successfully!")

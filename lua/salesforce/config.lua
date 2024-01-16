@@ -10,7 +10,7 @@ function Config:new()
         debug = false,
         popup = {
             -- The width of the popup window.
-            width = 80,
+            width = 100,
             -- The height of the popup window.
             height = 20,
             -- The border characters to use for the popup window
@@ -18,6 +18,9 @@ function Config:new()
         },
         file_manager = {
             ignore_conflicts = false,
+        },
+        org_manager = {
+            default_org_indicator = "󰄬",
         },
     }
     return o

@@ -21,17 +21,25 @@ M.execute_anon = function()
     Job:new({
         command = "sf",
         args = { "apex", "run", "-f", path },
-        on_exit = function(j)
+        on_exit = function(j, code)
             vim.schedule(function()
-                Debug:log("execute_anon.lua", "Result from command:")
-                Debug:log("execute_anon.lua", j:result())
-                Popup:write_to_popup(j:result())
+                if code == 0 then
+                    Debug:log("execute_anon.lua", "Result from command:")
+                    Debug:log("execute_anon.lua", j:result())
+                    local trimmed_data = vim.trim(table.concat(j:result()))
+                    if string.len(trimmed_data) > 0 then
+                        Popup:write_to_popup(j:result())
+                    end
+                end
             end)
         end,
         on_stderr = function(_, data)
             vim.schedule(function()
                 Debug:log("execute_anon.lua", "Command stderr is: %s", data)
-                Popup:write_to_popup(data)
+                local trimmed_data = vim.trim(data)
+                if string.len(trimmed_data) > 0 then
+                    Popup:write_to_popup(data)
+                end
             end)
         end,
     }):start()

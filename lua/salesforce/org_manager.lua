@@ -2,6 +2,7 @@ local Job = require("plenary.job")
 local Util = require("salesforce.util")
 local Debug = require("salesforce.debug")
 local Popup = require("salesforce.popup")
+local Config = require("salesforce.config")
 
 local OrgManager = {}
 
@@ -9,7 +10,7 @@ function OrgManager:new()
     local o = {}
     setmetatable(o, self)
     self.__index = self
-    self:init()
+    self:get_org_info(false)
     return o
 end
 
@@ -42,7 +43,10 @@ function OrgManager:get_default_alias()
     end
 end
 
-function OrgManager:init()
+function OrgManager:get_org_info(add_log)
+    if add_log then
+        Util.clear_and_notify("Refreshing org info...")
+    end
     local command = "sf org list --json"
     Debug:log("org_manager.lua", "Executing command: %s", command)
     local args = Util.split(command, " ")
@@ -60,6 +64,9 @@ function OrgManager:init()
                 if not json_ok or not sfdx_response then
                     vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
                     return
+                end
+                if add_log then
+                    Util.clear_and_notify("Successfully refreshed org info")
                 end
                 self:parse_orgs(sfdx_response)
             end)
@@ -115,7 +122,7 @@ function OrgManager:select_org()
                     Util.clear_and_notify(
                         string.format("Successully set target-org to %s", org_alias)
                     )
-                    self:init()
+                    self:get_org_info(true)
                 end
             end)
         end,
@@ -129,6 +136,7 @@ function OrgManager:select_org()
 end
 
 function OrgManager:set_default_org()
+    local default_org_indicator = Config:get_options().org_manager.default_org_indicator
     if not self.orgs then
         vim.notify("No orgs available", vim.log.levels.ERROR)
         return
@@ -138,8 +146,8 @@ function OrgManager:set_default_org()
     Popup:write_to_popup("Select an org:\n")
 
     for _, org in ipairs(self.orgs) do
-        local default = org.isDefaultUsername and " (default)" or ""
-        Popup:append_to_popup(string.format("%s%s", org.alias, default))
+        local default = org.isDefaultUsername and default_org_indicator or ""
+        Popup:append_to_popup(string.format("%s (%s) %s", org.alias, org.username, default))
     end
 end
 
