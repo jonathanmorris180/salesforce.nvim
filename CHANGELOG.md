@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.0.1...v1.0.2) (2024-01-16)
+
+
+### Bug Fixes
+
+* allow for failing apex tests ([29afff6](https://github.com/jonathanmorris180/salesforce.nvim/commit/29afff6d94380d6efbf0b546ca2f432d22147665))
+
 ## [1.0.1](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.0.0...v1.0.1) (2024-01-16)
 
 
