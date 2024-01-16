@@ -142,7 +142,7 @@ function OrgManager:set_default_org()
         return
     end
 
-    Popup:create_popup({ number = true })
+    Popup:create_popup({ number = true, allow_selection = true })
     Popup:write_to_popup("Select an org:\n")
 
     for _, org in ipairs(self.orgs) do

@@ -58,13 +58,15 @@ function PopupManager:create_popup(args)
         "<cmd>lua require('salesforce.popup'):close_popup()<CR>",
         { noremap = true, silent = true }
     )
-    vim.api.nvim_buf_set_keymap(
-        self.bufnr,
-        "n",
-        "<CR>",
-        "<cmd>lua require('salesforce.org_manager'):select_org()<CR>",
-        {}
-    )
+    if args and args.allow_selection then
+        vim.api.nvim_buf_set_keymap(
+            self.bufnr,
+            "n",
+            "<CR>",
+            "<cmd>lua require('salesforce.org_manager'):select_org()<CR>",
+            {}
+        )
+    end
 end
 
 function PopupManager:append_to_popup(data)
