@@ -42,13 +42,11 @@ local function execute_job(command)
         on_exit = function(j, code)
             vim.schedule(function()
                 Debug:log("test_runner.lua", "Command exited with code: %s", code)
-                if code == 0 then
-                    Debug:log("test_runner.lua", "Result from command:")
-                    Debug:log("test_runner.lua", j:result())
-                    local trimmed_data = vim.trim(table.concat(j:result()))
-                    if string.len(trimmed_data) > 0 then
-                        Popup:write_to_popup(j:result())
-                    end
+                Debug:log("test_runner.lua", "Result from command:")
+                Debug:log("test_runner.lua", j:result())
+                local trimmed_data = vim.trim(table.concat(j:result()))
+                if string.len(trimmed_data) > 0 then
+                    Popup:write_to_popup(j:result())
                 end
             end)
         end,

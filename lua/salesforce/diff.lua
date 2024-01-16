@@ -34,7 +34,7 @@ local function diff_callback(j)
         elseif
             sfdx_response.result
             and sfdx_response.result.messages
-            and #sfdx_respons.result.messages > 0
+            and #sfdx_response.result.messages > 0
         then
             for _, message in ipairs(sfdx_response.result.messages) do
                 if message.problem then
