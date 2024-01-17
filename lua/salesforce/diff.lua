@@ -1,6 +1,15 @@
 local Util = require("salesforce.util")
 local Job = require("plenary.job")
 local Debug = require("salesforce.debug")
+local OrgManager = require("salesforce.org_manager")
+
+function Job:is_running()
+    if self.handle and not vim.loop.is_closing(self.handle) and vim.loop.is_active(self.handle) then
+        return true
+    else
+        return false
+    end
+end
 
 local M = {}
 
@@ -61,7 +70,7 @@ end
 local function execute_job(command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
-    Job:new({
+    local new_job = Job:new({
         command = "sf",
         args = args,
         on_exit = diff_callback,
@@ -70,31 +79,45 @@ local function execute_job(command)
                 Debug:log("diff.lua", "Command stderr is: %s", data)
             end)
         end,
-    }):start()
+    })
+    if not M.current_job or not M.current_job:is_running() then
+        M.current_job = new_job
+        M.current_job:start()
+    end
 end
 
 M.diff_with_org = function()
+    if M.current_job and M.current_job:is_running() then
+        -- needs to be here or temp dir will be overwritten
+        Util.notify_command_in_progress("diff with org")
+        return
+    end
     local path = vim.fn.expand("%:p")
     local file_name = vim.fn.expand("%:t")
     local file_name_no_ext = Util.get_file_name_without_extension(file_name)
     local metadataType = Util.get_metadata_type(path)
+    local default_username = OrgManager:get_default_username()
 
     if metadataType == nil then
         vim.notify("Not a supported metadata type.", vim.log.levels.ERROR)
         return
     end
 
-    Util.clear_and_notify("Diffing " .. file_name .. " with the org...")
+    if default_username == nil then
+        vim.notify("No default org found.", vim.log.levels.ERROR)
+        return
+    end
+
+    Util.clear_and_notify(string.format("Diffing %s with org %s...", file_name, default_username))
     temp_dir = vim.fn.tempname()
-    local temp_dir_with_suffix = string.format("%s/main/default", temp_dir)
-    vim.fn.mkdir(temp_dir_with_suffix, "p")
-    Debug:log("diff.lua", "Created temp dir: " .. temp_dir_with_suffix)
+    Debug:log("diff.lua", "Created temp dir: " .. temp_dir)
 
     local command = string.format(
-        "sf project retrieve start -m %s:%s -r %s --json",
+        "sf project retrieve start -m %s:%s -r %s -o %s --json",
         metadataType,
         file_name_no_ext,
-        temp_dir
+        temp_dir,
+        default_username
     )
     Debug:log("diff.lua", "Command: " .. command)
     execute_job(command)

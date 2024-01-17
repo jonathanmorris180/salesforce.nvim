@@ -106,8 +106,10 @@ There are a number of options available to configure `salesforce.nvim`. See the 
 
 ```lua
 require("salesforce").setup({
-    -- Prints useful logs about what events are triggered, as well as outputs of the Salesforce CLI
-    debug = false,
+    debug = {
+        to_file = false,
+        to_console = false,
+    },
     popup = {
         -- The width of the popup window.
         width = 100,

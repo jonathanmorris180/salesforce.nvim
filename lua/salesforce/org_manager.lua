@@ -4,6 +4,15 @@ local Debug = require("salesforce.debug")
 local Popup = require("salesforce.popup")
 local Config = require("salesforce.config")
 
+function Job:is_running()
+    -- avoids textlock (see :h textlock)
+    if self.handle and not vim.loop.is_closing(self.handle) and vim.loop.is_active(self.handle) then
+        return true
+    else
+        return false
+    end
+end
+
 local OrgManager = {}
 
 function OrgManager:new()
@@ -36,6 +45,9 @@ function OrgManager:parse_orgs(json)
 end
 
 function OrgManager:get_default_alias()
+    if not self.orgs then
+        return
+    end
     for _, org in ipairs(self.orgs) do
         if org.isDefaultUsername then
             return org.alias
@@ -43,15 +55,31 @@ function OrgManager:get_default_alias()
     end
 end
 
-function OrgManager:get_org_info(add_log)
-    if add_log then
-        Util.clear_and_notify("Refreshing org info...")
+function OrgManager:get_default_username()
+    if not self.orgs then
+        return
     end
+    for _, org in ipairs(self.orgs) do
+        if org.isDefaultUsername then
+            return org.username
+        end
+    end
+end
+
+function OrgManager:command_in_progress()
+    if self.current_job and self.current_job:is_running() then
+        return true
+    else
+        return false
+    end
+end
+
+function OrgManager:get_org_info(add_log)
     local command = "sf org list --json"
     Debug:log("org_manager.lua", "Executing command: %s", command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
-    Job:new({
+    local new_job = Job:new({
         command = "sf",
         args = args,
         on_exit = function(j)
@@ -76,7 +104,18 @@ function OrgManager:get_org_info(add_log)
                 Debug:log("org_manager.lua", "Command stderr is: %s", data)
             end)
         end,
-    }):start()
+    })
+    Debug:log(
+        "org_manager.lua",
+        "Job in progress?: %s",
+        tostring(self.current_job and self.current_job:is_running() or "false")
+    )
+    if not self.current_job or not self.current_job:is_running() then
+        self.current_job = new_job
+        self.current_job:start()
+    else
+        Util.notify_command_in_progress("default org")
+    end
 end
 
 function OrgManager:select_org()
@@ -88,7 +127,7 @@ function OrgManager:select_org()
     Debug:log("org_manager.lua", "Executing command: %s", command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
-    Job:new({
+    local new_job = Job:new({
         command = "sf",
         args = args,
         on_exit = function(j)
@@ -120,7 +159,10 @@ function OrgManager:select_org()
                     and #sfdx_response.result.successes > 0
                 then
                     Util.clear_and_notify(
-                        string.format("Successully set target-org to %s", org_alias)
+                        string.format(
+                            "Successully set target-org to %s. Refreshing org info...",
+                            org_alias
+                        )
                     )
                     self:get_org_info(true)
                 end
@@ -131,7 +173,18 @@ function OrgManager:select_org()
                 Debug:log("org_manager.lua", "Command stderr is: %s", data)
             end)
         end,
-    }):start()
+    })
+    Debug:log(
+        "org_manager.lua",
+        "Job in progress?: %s",
+        tostring(self.current_job and self.current_job:is_running() or "false")
+    )
+    if not self.current_job or not self.current_job:is_running() then
+        self.current_job = new_job
+        self.current_job:start()
+    else
+        Util.notify_command_in_progress("default org")
+    end
     Popup:close_popup()
 end
 

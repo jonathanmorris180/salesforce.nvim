@@ -1,3 +1,5 @@
+local Debug = require("salesforce.debug")
+
 local M = {}
 
 local metadata_type_map = {
@@ -21,9 +23,17 @@ local metadata_type_map = {
     ["queues"] = "Queue",
 }
 
-function M.clear_and_notify(msg)
+function M.notify_command_in_progress(category)
+    Debug:log("util.lua", "User tried to execute a command while another command is in progress")
+    M.clear_and_notify(
+        string.format("A %s Salesforce command is already in progress", category),
+        vim.log.levels.WARN
+    )
+end
+
+function M.clear_and_notify(msg, log_level)
     vim.fn.feedkeys(":", "nx")
-    vim.notify(msg)
+    vim.notify(msg, log_level)
 end
 
 -- recursively search for the file

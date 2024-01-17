@@ -1,7 +1,16 @@
 local Config = require("salesforce.config")
+local OrgManager = require("salesforce.org_manager")
 local Job = require("plenary.job")
 local Debug = require("salesforce.debug")
 local Util = require("salesforce.util")
+
+function Job:is_running()
+    if self.handle and not vim.loop.is_closing(self.handle) and vim.loop.is_active(self.handle) then
+        return true
+    else
+        return false
+    end
+end
 
 local M = {}
 
@@ -114,7 +123,7 @@ end
 local function push(command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
-    Job:new({
+    local new_job = Job:new({
         command = "sf",
         args = args,
         on_exit = push_to_org_callback,
@@ -123,13 +132,20 @@ local function push(command)
                 Debug:log("file_manager.lua", "Command stderr is: %s", data)
             end)
         end,
-    }):start()
+    })
+
+    if not M.current_job or not M.current_job:is_running() then
+        M.current_job = new_job
+        M.current_job:start()
+    else
+        Util.notify_command_in_progress("push/pull")
+    end
 end
 
 local function pull(command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
-    Job:new({
+    local new_job = Job:new({
         command = "sf",
         args = args,
         on_exit = pull_from_org_callback,
@@ -138,15 +154,24 @@ local function pull(command)
                 Debug:log("file_manager.lua", "Command stderr is: %s", data)
             end)
         end,
-    }):start()
+    })
+
+    if not M.current_job or not M.current_job:is_running() then
+        M.current_job = new_job
+        M.current_job:start()
+    else
+        Util.notify_command_in_progress("push/pull")
+    end
 end
 
 M.push_to_org = function()
     local path = vim.fn.expand("%:p")
     local file_name = vim.fn.expand("%:t")
+    local default_username = OrgManager:get_default_username()
 
     Util.clear_and_notify("Pushing " .. file_name .. " to the org...")
-    local command = string.format("sf project deploy start -d %s --json", path)
+    local command =
+        string.format("sf project deploy start -d %s --json -o %s", path, default_username)
     Debug:log("file_manager.lua", "Command: " .. command)
     push(command)
 end
@@ -154,9 +179,11 @@ end
 M.pull_from_org = function()
     local path = vim.fn.expand("%:p")
     local file_name = vim.fn.expand("%:t")
+    local default_username = OrgManager:get_default_username()
 
     Util.clear_and_notify("Pulling " .. file_name .. " from the org...")
-    local command = string.format("sf project retrieve start -d %s --json", path)
+    local command =
+        string.format("sf project retrieve start -d %s --json -o %s", path, default_username)
     Debug:log("file_manager.lua", "Command: " .. command)
     if Config:get_options().file_manager.ignore_conflicts then
         Debug:log("file_manager.lua", "Ignoring conflicts becuase of config option")

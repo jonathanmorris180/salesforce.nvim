@@ -22,8 +22,10 @@
 --- You can pass in a lua table of options to customize the plugin. The default options are:
 --- >
 --- {
----     -- Prints useful logs about what events are triggered, as well as outputs of the Salesforce CLI
----     debug = false,
+---     debug = {
+---         to_file = false, -- logs debug messages to a file at vim.fn.stdpath("cache") .. "/salesforce.log"
+---         to_console = false,
+---     },
 ---     popup = {
 ---         -- The width of the popup window.
 ---         width = 100,
