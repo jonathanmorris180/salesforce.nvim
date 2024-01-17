@@ -14,7 +14,7 @@ vim.api.nvim_create_user_command("SalesforceExecuteFile", function()
     Anon.execute_anon()
 end, {})
 
-vim.api.nvim_create_user_command("SalesforceToggleConsoleDebug", function()
+vim.api.nvim_create_user_command("SalesforceToggleCommandLineDebug", function()
     local new_val = not Config:get_options().debug.to_command_line
     Config:get_options().debug.to_command_line = new_val
     vim.notify("Salesforce console debugging is " .. (new_val and "enabled" or "disabled"))

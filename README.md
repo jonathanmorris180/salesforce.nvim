@@ -12,7 +12,7 @@ Provides a set of utilities that emulate the commands of the Salesforce
 extension for VS Code. Out of the box commands include:
 
 - `:SalesforceExecuteFile`: Execute the current file as anonymous Apex
-- `:SalesforceToggleConsoleDebug`: Toggle debug logging for the console (this can also be set in the config options)
+- `:SalesforceToggleCommandLineDebug`: Toggle debug logging for the console (this can also be set in the config options)
 - `:SalesforceToggleLogFileDebug`: Toggle file debug logging (this can also be set in the config options)
 - `:SalesforceRefreshOrgInfo`: Refresh the org info for the current project
 - `:SalesforceClosePopup`: Close the popup window (useful in case you navigated away from it)
