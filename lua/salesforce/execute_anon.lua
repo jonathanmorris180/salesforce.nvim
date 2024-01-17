@@ -59,7 +59,7 @@ M.execute_anon = function()
         M.current_job = new_job
         M.current_job:start()
     else
-        Util.notify_command_in_progress()
+        Util.notify_command_in_progress("script execution")
     end
 end
 

@@ -23,9 +23,12 @@ local metadata_type_map = {
     ["queues"] = "Queue",
 }
 
-function M.notify_command_in_progress()
+function M.notify_command_in_progress(category)
     Debug:log("util.lua", "User tried to execute a command while another command is in progress")
-    M.clear_and_notify("A Salesforce command is already in progress", vim.log.levels.WARN)
+    M.clear_and_notify(
+        string.format("A %s Salesforce command is already in progress", category),
+        vim.log.levels.WARN
+    )
 end
 
 function M.clear_and_notify(msg, log_level)

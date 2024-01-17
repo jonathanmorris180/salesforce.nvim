@@ -15,9 +15,6 @@ local M = {}
 
 local temp_dir
 
--- to avoid textlock (see :h textlock)
-M.is_processing = false
-
 local function diff_callback(j)
     vim.schedule(function()
         local sfdx_output = j:result()
@@ -29,7 +26,6 @@ local function diff_callback(j)
         local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
         if not json_ok or not sfdx_response then
             vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
-            M.is_processing = false
             return
         end
 
@@ -41,7 +37,6 @@ local function diff_callback(j)
             for _, file in ipairs(sfdx_response.result.files) do
                 if file.error then
                     vim.notify(file.error, vim.log.levels.ERROR)
-                    M.is_processing = false
                     return
                 end
             end
@@ -53,7 +48,6 @@ local function diff_callback(j)
             for _, message in ipairs(sfdx_response.result.messages) do
                 if message.problem then
                     vim.notify(message.problem, vim.log.levels.ERROR)
-                    M.is_processing = false
                     return
                 end
             end
@@ -64,19 +58,16 @@ local function diff_callback(j)
 
         if not retrieved_file_path or not vim.fn.filereadable(retrieved_file_path) then
             vim.notify("Failed to retrieve the file from the org", vim.log.levels.ERROR)
-            M.is_processing = false
             return
         end
 
         Util.clear_and_notify("Diffing " .. file_name)
         vim.cmd("vert diffsplit " .. retrieved_file_path)
         vim.fn.delete(temp_dir, "rf")
-        M.is_processing = false
     end)
 end
 
 local function execute_job(command)
-    M.is_processing = true
     local args = Util.split(command, " ")
     table.remove(args, 1)
     local new_job = Job:new({
@@ -92,14 +83,13 @@ local function execute_job(command)
     if not M.current_job or not M.current_job:is_running() then
         M.current_job = new_job
         M.current_job:start()
-    else
-        Util.notify_command_in_progress()
     end
 end
 
 M.diff_with_org = function()
-    if M.is_processing then
-        Util.notify_command_in_progress()
+    if M.current_job and M.current_job:is_running() then
+        -- needs to be here or temp dir will be overwritten
+        Util.notify_command_in_progress("diff with org")
         return
     end
     local path = vim.fn.expand("%:p")
@@ -110,13 +100,11 @@ M.diff_with_org = function()
 
     if metadataType == nil then
         vim.notify("Not a supported metadata type.", vim.log.levels.ERROR)
-        M.is_processing = false
         return
     end
 
     if default_username == nil then
         vim.notify("No default org found.", vim.log.levels.ERROR)
-        M.is_processing = false
         return
     end
 

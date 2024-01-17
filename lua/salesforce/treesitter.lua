@@ -66,12 +66,12 @@ local get_declaration_name = function(type)
     return vim.treesitter.get_node_text(name, 0)
 end
 
-M.get_current_class_name = function()
-    return get_declaration_name("class_declaration")
-end
-
 M.get_current_method_name = function()
     return get_declaration_name("method_declaration")
+end
+
+M.get_current_class_name = function()
+    return get_declaration_name("class_declaration")
 end
 
 return M

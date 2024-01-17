@@ -138,7 +138,7 @@ local function push(command)
         M.current_job = new_job
         M.current_job:start()
     else
-        Util.notify_command_in_progress()
+        Util.notify_command_in_progress("push/pull")
     end
 end
 
@@ -160,7 +160,7 @@ local function pull(command)
         M.current_job = new_job
         M.current_job:start()
     else
-        Util.notify_command_in_progress()
+        Util.notify_command_in_progress("push/pull")
     end
 end
 

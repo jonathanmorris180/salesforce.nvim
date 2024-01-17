@@ -5,6 +5,7 @@ local Popup = require("salesforce.popup")
 local Config = require("salesforce.config")
 
 function Job:is_running()
+    -- avoids textlock (see :h textlock)
     if self.handle and not vim.loop.is_closing(self.handle) and vim.loop.is_active(self.handle) then
         return true
     else
@@ -18,7 +19,6 @@ function OrgManager:new()
     local o = {}
     setmetatable(o, self)
     self.__index = self
-    self.is_processing = false
     self:get_org_info(false)
     return o
 end
@@ -91,7 +91,6 @@ function OrgManager:get_org_info(add_log)
                 local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
                 if not json_ok or not sfdx_response then
                     vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
-                    self.is_processing = false
                     return
                 end
                 if add_log then
@@ -115,7 +114,7 @@ function OrgManager:get_org_info(add_log)
         self.current_job = new_job
         self.current_job:start()
     else
-        Util.notify_command_in_progress()
+        Util.notify_command_in_progress("default org")
     end
 end
 
@@ -140,7 +139,6 @@ function OrgManager:select_org()
                 local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
                 if not json_ok or not sfdx_response then
                     vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
-                    self.is_processing = false
                     return
                 end
 
@@ -152,7 +150,6 @@ function OrgManager:select_org()
                     for _, failure in ipairs(sfdx_response.result.failures) do
                         if failure.message then
                             vim.notify(failure.message, vim.log.levels.ERROR)
-                            self.is_processing = false
                             return
                         end
                     end
@@ -186,7 +183,7 @@ function OrgManager:select_org()
         self.current_job = new_job
         self.current_job:start()
     else
-        Util.notify_command_in_progress()
+        Util.notify_command_in_progress("default org")
     end
     Popup:close_popup()
 end
@@ -195,7 +192,6 @@ function OrgManager:set_default_org()
     local default_org_indicator = Config:get_options().org_manager.default_org_indicator
     if not self.orgs then
         vim.notify("No orgs available", vim.log.levels.ERROR)
-        self.is_processing = false
         return
     end
 

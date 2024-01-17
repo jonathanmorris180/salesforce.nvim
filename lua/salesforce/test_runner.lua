@@ -10,7 +10,7 @@ local run_method_command = 'sf apex run test -t "%s.%s" --synchronous -r human -
 
 local M = {}
 
-local function get_class_info()
+local function get_class_info(method_required)
     local file_type = vim.fn.expand("%:e")
 
     if file_type ~= "cls" then
@@ -21,7 +21,7 @@ local function get_class_info()
     local method_name = Treesitter:get_current_method_name()
     local class_name = Treesitter:get_current_class_name()
 
-    if not method_name then
+    if not method_name and method_required then
         vim.notify("Not in a method marked with @isTest", vim.log.levels.ERROR)
         return
     end
@@ -66,12 +66,12 @@ local function execute_job(command)
         M.current_job = new_job
         M.current_job:start()
     else
-        Util.notify_command_in_progress()
+        Util.notify_command_in_progress("test execution")
     end
 end
 
 M.execute_current_method = function()
-    local class_info = get_class_info()
+    local class_info = get_class_info(true)
     local default_username = OrgManager:get_default_username()
 
     if not class_info then
@@ -90,11 +90,14 @@ M.execute_current_method = function()
 end
 
 M.execute_current_class = function()
-    local class_info = get_class_info()
+    local class_info = get_class_info(false)
     local default_username = OrgManager:get_default_username()
 
     if not class_info then
-        vim.notify("Could not get class/method details", vim.log.levels.ERROR)
+        vim.notify(
+            "Could not get class details - please ensure your cursor is inside the class",
+            vim.log.levels.ERROR
+        )
         return
     end
 
