@@ -1,11 +1,12 @@
 local Popup = require("salesforce.popup")
 local Job = require("plenary.job")
+local OrgManager = require("salesforce.org_manager")
 local Debug = require("salesforce.debug")
 local Treesitter = require("salesforce.treesitter")
 local Util = require("salesforce.util")
 
-local run_class_command = 'sf apex run test -n "%s" --synchronous -r human'
-local run_method_command = 'sf apex run test -t "%s.%s" --synchronous -r human'
+local run_class_command = 'sf apex run test -n "%s" --synchronous -r human -o %s'
+local run_method_command = 'sf apex run test -t "%s.%s" --synchronous -r human -o %s'
 
 local M = {}
 
@@ -36,7 +37,7 @@ end
 local function execute_job(command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
-    Job:new({
+    local new_job = Job:new({
         command = "sf",
         args = args,
         on_exit = function(j, code)
@@ -59,11 +60,19 @@ local function execute_job(command)
                 end
             end)
         end,
-    }):start()
+    })
+
+    if not M.current_job or not M.current_job:is_running() then
+        M.current_job = new_job
+        M.current_job:start()
+    else
+        Util.notify_command_in_progress()
+    end
 end
 
 M.execute_current_method = function()
     local class_info = get_class_info()
+    local default_username = OrgManager:get_default_username()
 
     if not class_info then
         vim.notify("Could not get class/method details", vim.log.levels.ERROR)
@@ -73,7 +82,7 @@ M.execute_current_method = function()
     local class_name = class_info.class_name
     local method_name = class_info.method_name
 
-    local command = run_method_command:format(class_name, method_name)
+    local command = run_method_command:format(class_name, method_name, default_username)
     Popup:create_popup({})
     Popup:write_to_popup(string.format("Executing %s.%s...", class_name, method_name))
     Debug:log("test_runner.lua", "Running command: " .. command)
@@ -82,6 +91,7 @@ end
 
 M.execute_current_class = function()
     local class_info = get_class_info()
+    local default_username = OrgManager:get_default_username()
 
     if not class_info then
         vim.notify("Could not get class/method details", vim.log.levels.ERROR)
@@ -89,7 +99,7 @@ M.execute_current_class = function()
     end
 
     local class_name = class_info.class_name
-    local command = run_class_command:format(class_name)
+    local command = run_class_command:format(class_name, default_username)
     Popup:create_popup({})
     Popup:write_to_popup(string.format("Executing %s...", class_name))
     Debug:log("test_runner.lua", "Running command: " .. command)

@@ -4,6 +4,14 @@ local Debug = require("salesforce.debug")
 local Popup = require("salesforce.popup")
 local Config = require("salesforce.config")
 
+function Job:is_running()
+    if self.handle and not vim.loop.is_closing(self.handle) and vim.loop.is_active(self.handle) then
+        return true
+    else
+        return false
+    end
+end
+
 local OrgManager = {}
 
 function OrgManager:new()
@@ -47,58 +55,71 @@ function OrgManager:get_default_alias()
     end
 end
 
-function OrgManager:command_in_progress()
-    return self.is_processing
-end
-
-function OrgManager:get_org_info(add_log, allow_processing)
-    if self.is_processing and not allow_processing then
-        Util.notify_command_in_progress()
+function OrgManager:get_default_username()
+    if not self.orgs then
         return
     end
-    self.is_processing = true
+    for _, org in ipairs(self.orgs) do
+        if org.isDefaultUsername then
+            return org.username
+        end
+    end
+end
+
+function OrgManager:command_in_progress()
+    if self.current_job and self.current_job:is_running() then
+        return true
+    else
+        return false
+    end
+end
+
+function OrgManager:get_org_info(add_log)
     local command = "sf org list --json"
     Debug:log("org_manager.lua", "Executing command: %s", command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
-    Job
-        :new({
-            command = "sf",
-            args = args,
-            on_exit = function(j)
-                vim.schedule(function()
-                    local sfdx_output = j:result()
-                    sfdx_output = table.concat(sfdx_output)
-                    Debug:log("org_manager.lua", "Result from command:")
-                    Debug:log("org_manager.lua", sfdx_output)
-                    local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
-                    if not json_ok or not sfdx_response then
-                        vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
-                        self.is_processing = false
-                        return
-                    end
-                    if add_log then
-                        Util.clear_and_notify("Successfully refreshed org info")
-                    end
-                    self:parse_orgs(sfdx_response)
+    local new_job = Job:new({
+        command = "sf",
+        args = args,
+        on_exit = function(j)
+            vim.schedule(function()
+                local sfdx_output = j:result()
+                sfdx_output = table.concat(sfdx_output)
+                Debug:log("org_manager.lua", "Result from command:")
+                Debug:log("org_manager.lua", sfdx_output)
+                local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
+                if not json_ok or not sfdx_response then
+                    vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
                     self.is_processing = false
-                end)
-            end,
-            on_stderr = function(_, data)
-                vim.schedule(function()
-                    Debug:log("org_manager.lua", "Command stderr is: %s", data)
-                end)
-            end,
-        })
-        :start()
+                    return
+                end
+                if add_log then
+                    Util.clear_and_notify("Successfully refreshed org info")
+                end
+                self:parse_orgs(sfdx_response)
+            end)
+        end,
+        on_stderr = function(_, data)
+            vim.schedule(function()
+                Debug:log("org_manager.lua", "Command stderr is: %s", data)
+            end)
+        end,
+    })
+    Debug:log(
+        "org_manager.lua",
+        "Job in progress?: %s",
+        tostring(self.current_job and self.current_job:is_running() or "false")
+    )
+    if not self.current_job or not self.current_job:is_running() then
+        self.current_job = new_job
+        self.current_job:start()
+    else
+        Util.notify_command_in_progress()
+    end
 end
 
 function OrgManager:select_org()
-    if self.is_processing then
-        Util.notify_command_in_progress()
-        return
-    end
-    self.is_processing = true
     local idx = vim.fn.line(".") - 2
     local org_alias = self.orgs[idx].alias
     local org_username = self.orgs[idx].username
@@ -107,57 +128,66 @@ function OrgManager:select_org()
     Debug:log("org_manager.lua", "Executing command: %s", command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
-    Job
-        :new({
-            command = "sf",
-            args = args,
-            on_exit = function(j)
-                vim.schedule(function()
-                    local sfdx_output = j:result()
-                    sfdx_output = table.concat(sfdx_output)
-                    Debug:log("org_manager.lua", "Result from command:")
-                    Debug:log("org_manager.lua", sfdx_output)
-                    local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
-                    if not json_ok or not sfdx_response then
-                        vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
-                        self.is_processing = false
-                        return
-                    end
+    local new_job = Job:new({
+        command = "sf",
+        args = args,
+        on_exit = function(j)
+            vim.schedule(function()
+                local sfdx_output = j:result()
+                sfdx_output = table.concat(sfdx_output)
+                Debug:log("org_manager.lua", "Result from command:")
+                Debug:log("org_manager.lua", sfdx_output)
+                local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
+                if not json_ok or not sfdx_response then
+                    vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
+                    self.is_processing = false
+                    return
+                end
 
-                    if
-                        sfdx_response.result
-                        and sfdx_response.result.failures
-                        and #sfdx_response.result.failures > 0
-                    then
-                        for _, failure in ipairs(sfdx_response.result.failures) do
-                            if failure.message then
-                                vim.notify(failure.message, vim.log.levels.ERROR)
-                                self.is_processing = false
-                                return
-                            end
+                if
+                    sfdx_response.result
+                    and sfdx_response.result.failures
+                    and #sfdx_response.result.failures > 0
+                then
+                    for _, failure in ipairs(sfdx_response.result.failures) do
+                        if failure.message then
+                            vim.notify(failure.message, vim.log.levels.ERROR)
+                            self.is_processing = false
+                            return
                         end
-                    elseif
-                        sfdx_response.result
-                        and sfdx_response.result.successes
-                        and #sfdx_response.result.successes > 0
-                    then
-                        Util.clear_and_notify(
-                            string.format(
-                                "Successully set target-org to %s. Refreshing org info...",
-                                org_alias
-                            )
-                        )
-                        self:get_org_info(true, true)
                     end
-                end)
-            end,
-            on_stderr = function(_, data)
-                vim.schedule(function()
-                    Debug:log("org_manager.lua", "Command stderr is: %s", data)
-                end)
-            end,
-        })
-        :start()
+                elseif
+                    sfdx_response.result
+                    and sfdx_response.result.successes
+                    and #sfdx_response.result.successes > 0
+                then
+                    Util.clear_and_notify(
+                        string.format(
+                            "Successully set target-org to %s. Refreshing org info...",
+                            org_alias
+                        )
+                    )
+                    self:get_org_info(true)
+                end
+            end)
+        end,
+        on_stderr = function(_, data)
+            vim.schedule(function()
+                Debug:log("org_manager.lua", "Command stderr is: %s", data)
+            end)
+        end,
+    })
+    Debug:log(
+        "org_manager.lua",
+        "Job in progress?: %s",
+        tostring(self.current_job and self.current_job:is_running() or "false")
+    )
+    if not self.current_job or not self.current_job:is_running() then
+        self.current_job = new_job
+        self.current_job:start()
+    else
+        Util.notify_command_in_progress()
+    end
     Popup:close_popup()
 end
 
