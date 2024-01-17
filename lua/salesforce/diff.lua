@@ -1,10 +1,14 @@
 local Util = require("salesforce.util")
 local Job = require("plenary.job")
 local Debug = require("salesforce.debug")
+local OrgManager = require("salesforce.org_manager")
 
 local M = {}
 
 local temp_dir
+
+-- to avoid textlock (see :h textlock)
+M.is_processing = false
 
 local function diff_callback(j)
     vim.schedule(function()
@@ -17,6 +21,7 @@ local function diff_callback(j)
         local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
         if not json_ok or not sfdx_response then
             vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
+            M.is_processing = false
             return
         end
 
@@ -28,6 +33,7 @@ local function diff_callback(j)
             for _, file in ipairs(sfdx_response.result.files) do
                 if file.error then
                     vim.notify(file.error, vim.log.levels.ERROR)
+                    M.is_processing = false
                     return
                 end
             end
@@ -39,6 +45,7 @@ local function diff_callback(j)
             for _, message in ipairs(sfdx_response.result.messages) do
                 if message.problem then
                     vim.notify(message.problem, vim.log.levels.ERROR)
+                    M.is_processing = false
                     return
                 end
             end
@@ -49,16 +56,19 @@ local function diff_callback(j)
 
         if not retrieved_file_path or not vim.fn.filereadable(retrieved_file_path) then
             vim.notify("Failed to retrieve the file from the org", vim.log.levels.ERROR)
+            M.is_processing = false
             return
         end
 
         Util.clear_and_notify("Diffing " .. file_name)
         vim.cmd("vert diffsplit " .. retrieved_file_path)
         vim.fn.delete(temp_dir, "rf")
+        M.is_processing = false
     end)
 end
 
 local function execute_job(command)
+    M.is_processing = true
     local args = Util.split(command, " ")
     table.remove(args, 1)
     Job:new({
@@ -74,27 +84,38 @@ local function execute_job(command)
 end
 
 M.diff_with_org = function()
+    if M.is_processing then
+        Util.notify_command_in_progress()
+        return
+    end
     local path = vim.fn.expand("%:p")
     local file_name = vim.fn.expand("%:t")
     local file_name_no_ext = Util.get_file_name_without_extension(file_name)
     local metadataType = Util.get_metadata_type(path)
+    local default_alias = OrgManager:get_default_alias()
 
     if metadataType == nil then
         vim.notify("Not a supported metadata type.", vim.log.levels.ERROR)
+        M.is_processing = false
         return
     end
 
-    Util.clear_and_notify("Diffing " .. file_name .. " with the org...")
+    if default_alias == nil then
+        vim.notify("No default org found.", vim.log.levels.ERROR)
+        M.is_processing = false
+        return
+    end
+
+    Util.clear_and_notify(string.format("Diffing %s with org %s...", file_name, default_alias))
     temp_dir = vim.fn.tempname()
-    local temp_dir_with_suffix = string.format("%s/main/default", temp_dir)
-    vim.fn.mkdir(temp_dir_with_suffix, "p")
-    Debug:log("diff.lua", "Created temp dir: " .. temp_dir_with_suffix)
+    Debug:log("diff.lua", "Created temp dir: " .. temp_dir)
 
     local command = string.format(
-        "sf project retrieve start -m %s:%s -r %s --json",
+        "sf project retrieve start -m %s:%s -r %s -o %s --json",
         metadataType,
         file_name_no_ext,
-        temp_dir
+        temp_dir,
+        default_alias
     )
     Debug:log("diff.lua", "Command: " .. command)
     execute_job(command)

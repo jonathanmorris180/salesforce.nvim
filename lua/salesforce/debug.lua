@@ -49,8 +49,12 @@ function Debugger:log(scope, item, ...)
 end
 
 function Debugger:log_str(debug_str)
-    print(debug_str)
-    vim.fn.writefile({ debug_str }, self.log_file_path, "a")
+    if Config:get_options().debug.to_console then
+        print(debug_str)
+    end
+    if Config:get_options().debug.to_file then
+        vim.fn.writefile({ debug_str }, self.log_file_path, "a")
+    end
 end
 
 ---prints the table if debug is true.
@@ -59,7 +63,7 @@ end
 ---@param indent number?: the default indent value, starts at 0.
 ---@private
 function Debugger:tprint(table, indent)
-    if not Config:get_options().debug then
+    if not Config:get_options().debug.to_file and not Config:get_options().debug.to_console then
         return
     end
 

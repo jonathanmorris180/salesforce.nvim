@@ -6,7 +6,10 @@ function Config:new()
     self.__index = self
     -- default config values
     o.options = {
-        debug = false,
+        debug = {
+            to_file = false,
+            to_console = false,
+        },
         popup = {
             -- The width of the popup window.
             width = 100,

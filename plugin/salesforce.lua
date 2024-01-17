@@ -1,4 +1,5 @@
 local Anon = require("salesforce.execute_anon")
+local Util = require("salesforce.util")
 local Testrunner = require("salesforce.test_runner")
 local Popup = require("salesforce.popup")
 local FileManager = require("salesforce.file_manager")
@@ -13,10 +14,21 @@ vim.api.nvim_create_user_command("SalesforceExecuteFile", function()
     Anon.execute_anon()
 end, {})
 
-vim.api.nvim_create_user_command("SalesforceToggleDebug", function()
-    local new_val = not Config:get_options().debug
-    Config:get_options().debug = new_val
-    vim.notify("Salesforce debugging is " .. (new_val and "enabled" or "disabled"))
+vim.api.nvim_create_user_command("SalesforceToggleConsoleDebug", function()
+    local new_val = not Config:get_options().debug.to_console
+    Config:get_options().debug.to_console = new_val
+    vim.notify("Salesforce console debugging is " .. (new_val and "enabled" or "disabled"))
+end, {})
+
+vim.api.nvim_create_user_command("SalesforceToggleLogFileDebug", function()
+    local new_val = not Config:get_options().debug.to_file
+    Config:get_options().debug.to_file = new_val
+    vim.notify("Salesforce log file debugging is " .. (new_val and "enabled" or "disabled"))
+end, {})
+
+vim.api.nvim_create_user_command("SalesforceRefreshOrgInfo", function()
+    Util.clear_and_notify("Refreshing org info...") -- keep this here instead of in function below so that messages aren't overridden after org selection
+    OrgManager:get_org_info(true)
 end, {})
 
 vim.api.nvim_create_user_command("SalesforceClosePopup", function()
