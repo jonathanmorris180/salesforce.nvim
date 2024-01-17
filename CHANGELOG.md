@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.1.0](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.0.2...v1.1.0) (2024-01-17)
+
+
+### Features
+
+* **org_manager:** add new commands and fix bugs ([1e28db2](https://github.com/jonathanmorris180/salesforce.nvim/commit/1e28db2656c9dba9f696474d9f11c4f365d8a927))
+
+
+### Bug Fixes
+
+* documentation ([b22a7ef](https://github.com/jonathanmorris180/salesforce.nvim/commit/b22a7ef192c657271133f48d1644e047491f8867))
+* help docs ([33842c2](https://github.com/jonathanmorris180/salesforce.nvim/commit/33842c2edd7d73be59920beb997ca0e62f53e1bf))
+* treesitter ([8664c13](https://github.com/jonathanmorris180/salesforce.nvim/commit/8664c136f9964d9e7c200df79325d44afbe58a52))
+* update docs ([068901f](https://github.com/jonathanmorris180/salesforce.nvim/commit/068901f19c2f06662315ffb8343e265940bc3b6c))
+* update process handling ([e1d6d08](https://github.com/jonathanmorris180/salesforce.nvim/commit/e1d6d083dfb9e9c19d1302bedfd17f4c30889ba5))
+
 ## [1.0.2](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.0.1...v1.0.2) (2024-01-16)
 
 
