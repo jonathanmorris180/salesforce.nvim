@@ -26,7 +26,7 @@
 --- {
 ---     debug = {
 ---         to_file = false, -- logs debug messages to a file at vim.fn.stdpath("cache") .. "/salesforce.log"
----         to_console = false,
+---         to_command_line = false,
 ---     },
 ---     popup = {
 ---         -- The width of the popup window.

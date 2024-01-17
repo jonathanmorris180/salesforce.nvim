@@ -110,7 +110,7 @@ There are a number of options available to configure `salesforce.nvim`. See the 
 require("salesforce").setup({
     debug = {
         to_file = false,
-        to_console = false,
+        to_command_line = false,
     },
     popup = {
         -- The width of the popup window.
