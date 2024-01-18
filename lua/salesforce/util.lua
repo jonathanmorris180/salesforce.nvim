@@ -31,6 +31,10 @@ function M.notify_command_in_progress(category)
     )
 end
 
+function M.notify_default_org_not_set()
+    vim.notify("Please select a default org", vim.log.levels.ERROR)
+end
+
 function M.clear_and_notify(msg, log_level)
     vim.fn.feedkeys(":", "nx")
     vim.notify(msg, log_level)

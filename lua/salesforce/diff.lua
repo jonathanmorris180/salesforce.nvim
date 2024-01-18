@@ -26,6 +26,7 @@ local function diff_callback(j)
         local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
         if not json_ok or not sfdx_response then
             vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
+            vim.fn.delete(temp_dir, "rf")
             return
         end
 
@@ -37,6 +38,7 @@ local function diff_callback(j)
             for _, file in ipairs(sfdx_response.result.files) do
                 if file.error then
                     vim.notify(file.error, vim.log.levels.ERROR)
+                    vim.fn.delete(temp_dir, "rf")
                     return
                 end
             end
@@ -48,6 +50,7 @@ local function diff_callback(j)
             for _, message in ipairs(sfdx_response.result.messages) do
                 if message.problem then
                     vim.notify(message.problem, vim.log.levels.ERROR)
+                    vim.fn.delete(temp_dir, "rf")
                     return
                 end
             end
@@ -58,6 +61,7 @@ local function diff_callback(j)
 
         if not retrieved_file_path or not vim.fn.filereadable(retrieved_file_path) then
             vim.notify("Failed to retrieve the file from the org", vim.log.levels.ERROR)
+            vim.fn.delete(temp_dir, "rf")
             return
         end
 
@@ -104,12 +108,14 @@ M.diff_with_org = function()
     end
 
     if default_username == nil then
-        vim.notify("No default org found.", vim.log.levels.ERROR)
+        Util.notify_default_org_not_set()
         return
     end
 
     Util.clear_and_notify(string.format("Diffing %s with org %s...", file_name, default_username))
     temp_dir = vim.fn.tempname()
+    local temp_dir_with_suffix = temp_dir .. "/main/default"
+    vim.fn.mkdir(temp_dir_with_suffix, "p")
     Debug:log("diff.lua", "Created temp dir: " .. temp_dir)
 
     local command = string.format(

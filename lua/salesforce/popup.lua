@@ -31,6 +31,10 @@ function PopupManager:create_window()
     return win_id
 end
 
+function PopupManager:refocus()
+    vim.api.nvim_set_current_win(self.win_id)
+end
+
 function PopupManager:create_popup(args)
     if self.win_id and self.bufnr then
         return

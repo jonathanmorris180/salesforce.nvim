@@ -25,9 +25,14 @@ M.execute_anon = function()
         return
     end
 
+    if not default_username then
+        Util.notify_default_org_not_set()
+        return
+    end
+
     Popup:create_popup({})
     Popup:write_to_popup("Executing anonymous Apex script...")
-    local command = string.format("sf apex run -f %s -o %s", path, default_username)
+    local command = string.format("sf apex run -f '%s' -o %s", path, default_username)
     Debug:log("execute_anon.lua", "Running " .. command .. "...")
     local new_job = Job:new({
         command = "sf",

@@ -120,9 +120,11 @@ local function pull_from_org_callback(j)
     end)
 end
 
-local function push(command)
+local function push(command, path)
     local args = Util.split(command, " ")
     table.remove(args, 1)
+    table.insert(args, "-d")
+    table.insert(args, path)
     local new_job = Job:new({
         command = "sf",
         args = args,
@@ -142,9 +144,11 @@ local function push(command)
     end
 end
 
-local function pull(command)
+local function pull(command, path)
     local args = Util.split(command, " ")
     table.remove(args, 1)
+    table.insert(args, "-d")
+    table.insert(args, path)
     local new_job = Job:new({
         command = "sf",
         args = args,
@@ -169,11 +173,15 @@ M.push_to_org = function()
     local file_name = vim.fn.expand("%:t")
     local default_username = OrgManager:get_default_username()
 
-    Util.clear_and_notify("Pushing " .. file_name .. " to the org...")
-    local command =
-        string.format("sf project deploy start -d %s --json -o %s", path, default_username)
-    Debug:log("file_manager.lua", "Command: " .. command)
-    push(command)
+    if not default_username then
+        Util.notify_default_org_not_set()
+        return
+    end
+
+    Util.clear_and_notify(string.format("Pushing %s to org %s...", file_name, default_username))
+    local command = string.format("sf project deploy start --json -o %s", default_username)
+    Debug:log("file_manager.lua", "Command: " .. command .. string.format(" -d '%s'", path))
+    push(command, path)
 end
 
 M.pull_from_org = function()
@@ -181,15 +189,19 @@ M.pull_from_org = function()
     local file_name = vim.fn.expand("%:t")
     local default_username = OrgManager:get_default_username()
 
-    Util.clear_and_notify("Pulling " .. file_name .. " from the org...")
-    local command =
-        string.format("sf project retrieve start -d %s --json -o %s", path, default_username)
-    Debug:log("file_manager.lua", "Command: " .. command)
+    if not default_username then
+        Util.notify_default_org_not_set()
+        return
+    end
+
+    Util.clear_and_notify(string.format("Pulling %s from org %s...", file_name, default_username))
+    local command = string.format("sf project retrieve start --json -o %s", default_username)
     if Config:get_options().file_manager.ignore_conflicts then
         Debug:log("file_manager.lua", "Ignoring conflicts becuase of config option")
         command = command .. " --ignore-conflicts"
     end
-    pull(command)
+    Debug:log("file_manager.lua", "Command: " .. command .. string.format(" -d '%s'", path))
+    pull(command, path)
 end
 
 return M

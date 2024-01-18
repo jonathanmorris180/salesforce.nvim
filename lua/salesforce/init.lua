@@ -11,7 +11,8 @@
 --- - `SalesforceToggleCommandLineDebug`: Toggle debug logging for the console (this can also be set in |Salesforce.setup|)
 --- - `SalesforceToggleLogFileDebug`: Toggle file debug logging (this can also be set in |Salesforce.setup|)
 --- - `SalesforceRefreshOrgInfo`: Refresh the org info for the current project
---- - `SalesforceClosePopup`: Close the popup window (useful in case you navigated away from it)
+--- - `SalesforceClosePopup`: Close the popup window
+--- - `SalesforceRefocusPopup`: Refocus the cursor in the popup window
 --- - `SalesforceExecuteCurrentMethod`: Execute the test method under the cursor
 --- - `SalesforceExecuteCurrentClass`: Execute all test methods in the current class
 --- - `SalesforcePushToOrg`: Push the current file to the org

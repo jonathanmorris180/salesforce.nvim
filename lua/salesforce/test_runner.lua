@@ -74,6 +74,11 @@ M.execute_current_method = function()
     local class_info = get_class_info(true)
     local default_username = OrgManager:get_default_username()
 
+    if not default_username then
+        Util.notify_default_org_not_set()
+        return
+    end
+
     if not class_info then
         vim.notify("Could not get class/method details", vim.log.levels.ERROR)
         return
@@ -92,6 +97,11 @@ end
 M.execute_current_class = function()
     local class_info = get_class_info(false)
     local default_username = OrgManager:get_default_username()
+
+    if not default_username then
+        Util.notify_default_org_not_set()
+        return
+    end
 
     if not class_info then
         vim.notify(
