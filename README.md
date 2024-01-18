@@ -24,6 +24,10 @@ extension for VS Code. Out of the box commands include:
 - `:SalesforceDiffFile`: Diff the current file against the file in the org
 - `:SalesforceSetDefaultOrg`: Set the default org for the current project
 
+![Execute Anonymous](./.github/images/execute-anonymous.png)
+
+![Diff With Org](./.github/images/diff.png)
+
 ## 📋 Installation
 
 A minimal configuration is as follows:
