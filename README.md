@@ -81,13 +81,13 @@ Plug "salesforce.nvim"
 <td>
 
 ```lua
-require("lazy").setup({
+{
     "salesforce.nvim",
     dependencies = {
         "nvim-lua/plenary.nvim",
         "nvim-treesitter/nvim-treesitter",
     }
-})
+}
 ```
 
 </td>
