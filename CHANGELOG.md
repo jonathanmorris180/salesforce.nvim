@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.1.2...v1.2.0) (2024-01-18)
+
+
+### Features
+
+* add refocus and minor bug fixes ([706b741](https://github.com/jonathanmorris180/salesforce.nvim/commit/706b741fcbfd4b911330ea3105ed7807f8cb2906))
+
+
+### Bug Fixes
+
+* docs ([b7dac5e](https://github.com/jonathanmorris180/salesforce.nvim/commit/b7dac5e0b858a637082998741a52a0e3de1efccb))
+
 ## [1.1.2](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.1.1...v1.1.2) (2024-01-17)
 
 
