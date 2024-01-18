@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.1...v1.2.2) (2024-01-18)
+
+
+### Bug Fixes
+
+* add images to readme ([9258cb8](https://github.com/jonathanmorris180/salesforce.nvim/commit/9258cb86620a147d3abc112b9ae442b93ff5b62b))
+
 ## [1.2.1](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.0...v1.2.1) (2024-01-18)
 
 
