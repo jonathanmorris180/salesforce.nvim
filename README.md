@@ -51,7 +51,7 @@ A minimal configuration is as follows:
 
 ```lua
 use {
-    "salesforce.nvim",
+    "jonathanmorris180/salesforce.nvim",
     requires = {
         "nvim-lua/plenary.nvim",
         "nvim-treesitter/nvim-treesitter"
@@ -70,7 +70,7 @@ use {
 <td>
 
 ```lua
-Plug "salesforce.nvim"
+Plug "jonathanmorris180/salesforce.nvim"
     Plug "nvim-lua/plenary.nvim"
     Plug "nvim-treesitter/nvim-treesitter"
 ```
