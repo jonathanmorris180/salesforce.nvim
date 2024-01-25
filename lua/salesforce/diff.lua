@@ -121,7 +121,7 @@ M.diff_with_org = function()
     local command = string.format(
         "sf project retrieve start -m %s:%s -r %s -o %s --json",
         metadataType,
-        file_name_no_ext,
+        string.gsub(file_name_no_ext, " ", "\\ "),
         temp_dir,
         default_username
     )
