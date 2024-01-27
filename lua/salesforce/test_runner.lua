@@ -39,6 +39,7 @@ local function execute_job(command)
     table.remove(args, 1)
     local new_job = Job:new({
         command = "sf",
+        env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
         args = args,
         on_exit = function(j, code)
             vim.schedule(function()

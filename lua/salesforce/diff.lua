@@ -78,6 +78,7 @@ local function execute_job(command)
         command = "sf",
         args = args,
         on_exit = diff_callback,
+        env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
         on_stderr = function(_, data)
             vim.schedule(function()
                 Debug:log("diff.lua", "Command stderr is: %s", data)

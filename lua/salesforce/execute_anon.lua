@@ -36,6 +36,7 @@ M.execute_anon = function()
     Debug:log("execute_anon.lua", "Running " .. command .. "...")
     local new_job = Job:new({
         command = "sf",
+        env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
         args = { "apex", "run", "-f", path, "-o", default_username },
         on_exit = function(j, code)
             vim.schedule(function()
