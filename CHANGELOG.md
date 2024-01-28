@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.4](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.3...v1.2.4) (2024-01-28)
+
+
+### Bug Fixes
+
+* Account for spaces when diffing files and fix tests ([23b0dce](https://github.com/jonathanmorris180/salesforce.nvim/commit/23b0dced73490c320104332852138caf67c957ed))
+* diff command accommodates for spaces in metadata name ([c638332](https://github.com/jonathanmorris180/salesforce.nvim/commit/c638332e008760598015c0c47dd335b09cb12761))
+
 ## [1.2.3](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.2...v1.2.3) (2024-01-20)
 
 
