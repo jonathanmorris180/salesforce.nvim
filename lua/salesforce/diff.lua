@@ -71,12 +71,23 @@ local function diff_callback(j)
     end)
 end
 
-local function execute_job(command)
-    local args = Util.split(command, " ")
-    table.remove(args, 1)
+local function expand(t)
+    local res = {}
+    for k, v in pairs(t) do
+        res[#res + 1] = k
+        res[#res + 1] = v
+    end
+    return res
+end
+
+local function execute_job(args)
+    local all_args = { "project", "retrieve", "start", unpack(expand(args)) }
+    table.insert(all_args, "--json")
+    Debug:log("diff.lua", "Command: ")
+    Debug:log("diff.lua", all_args)
     local new_job = Job:new({
         command = "sf",
-        args = args,
+        args = all_args,
         on_exit = diff_callback,
         on_stderr = function(_, data)
             vim.schedule(function()
@@ -117,16 +128,13 @@ M.diff_with_org = function()
     local temp_dir_with_suffix = temp_dir .. "/main/default"
     vim.fn.mkdir(temp_dir_with_suffix, "p")
     Debug:log("diff.lua", "Created temp dir: " .. temp_dir)
+    local args = {
+        ["-m"] = string.format("%s:%s", metadataType, file_name_no_ext),
+        ["-r"] = temp_dir,
+        ["-o"] = default_username,
+    }
 
-    local command = string.format(
-        "sf project retrieve start -m %s:%s -r %s -o %s --json",
-        metadataType,
-        string.gsub(file_name_no_ext, " ", "\\ "),
-        temp_dir,
-        default_username
-    )
-    Debug:log("diff.lua", "Command: " .. command)
-    execute_job(command)
+    execute_job(args)
 end
 
 return M

@@ -36,13 +36,23 @@ T["execute_anon()"] = MiniTest.new_set()
 
 T["execute_anon()"]["displays a mock value in the scratch buffer"] = function()
     mock_schedule()
-    child.lua(string.format([[M.setup({debug = %s})]], tostring(helpers.debug())))
+    local debug = string.format(
+        [[
+    {
+        to_file = %s,
+        to_command_line = false,
+    }
+    ]],
+        tostring(helpers.debug())
+    )
+    child.lua(string.format([[M.setup({debug = %s})]], debug))
     child.lua([[
         dofile("tests/resources/execute_anon/plenary_override.lua")
     ]])
     -- adding here to avoid "same file is required with different names" error
     child.lua([[
         package.loaded["plenary.job"] = require("mocks.plenary.job")
+        package.loaded["salesforce.org_manager"] = require("mocks.salesforce.org_manager")
         require("plenary.reload").reload_module("salesforce.execute_anon")
     ]])
     child.cmd(string.format("e %s", test_dir))

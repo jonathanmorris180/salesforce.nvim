@@ -31,7 +31,6 @@ function Debugger:log(scope, item, ...)
 
     if type(item) == "table" then
         self:tprint(item)
-        return
     end
 
     local info = debug.getinfo(2, "Sl")
@@ -41,7 +40,9 @@ function Debugger:log(scope, item, ...)
         line = "L" .. info.currentline
     end
 
-    local final_arg = (select("#", ...) == 0 and item) or string.format(item, ...)
+    local final_arg = (type(item) == "table" and "TABLE")
+        or (type(item) == "string" and select("#", ...) == 0 and item)
+        or (type(item) == "string" and string.format(item, ...))
 
     local debug_str =
         string.format("[salesforce:%s %s in %s] > %s", os.date("%H:%M:%S"), line, scope, final_arg)
@@ -63,12 +64,6 @@ end
 ---@param indent number?: the default indent value, starts at 0.
 ---@private
 function Debugger:tprint(table, indent)
-    if
-        not Config:get_options().debug.to_file and not Config:get_options().debug.to_command_line
-    then
-        return
-    end
-
     if not indent then
         indent = 0
     end
