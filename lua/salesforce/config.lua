@@ -24,7 +24,14 @@ function Config:new()
         org_manager = {
             default_org_indicator = "󰄬",
         },
+        -- Default SF CLI executable is SF but for Windows it is using npm's SF.cmd
+        sf_executable = "sf",
     }
+
+    if jit.os == "Windows" then
+        o.options.sf_executable = "sf.cmd"
+    end
+
     return o
 end
 

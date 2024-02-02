@@ -126,7 +126,7 @@ local function push(command, path)
     table.insert(args, "-d")
     table.insert(args, path)
     local new_job = Job:new({
-        command = "sf",
+        command = Config:get_options().sf_executable,
         env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
         args = args,
         on_exit = push_to_org_callback,
@@ -151,7 +151,7 @@ local function pull(command, path)
     table.insert(args, "-d")
     table.insert(args, path)
     local new_job = Job:new({
-        command = "sf",
+        command = Config:get_options().sf_executable,
         env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
         args = args,
         on_exit = pull_from_org_callback,

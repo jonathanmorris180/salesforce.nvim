@@ -80,7 +80,7 @@ function OrgManager:get_org_info(add_log)
     local args = Util.split(command, " ")
     table.remove(args, 1)
     local new_job = Job:new({
-        command = "sf",
+        command = Config:get_options().sf_executable,
         args = args,
         on_exit = function(j)
             vim.schedule(function()
@@ -129,7 +129,7 @@ function OrgManager:select_org()
     local args = Util.split(command, " ")
     table.remove(args, 1)
     local new_job = Job:new({
-        command = "sf",
+        command = Config:get_options().sf_executable,
         args = args,
         on_exit = function(j)
             vim.schedule(function()
