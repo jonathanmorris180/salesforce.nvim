@@ -2,6 +2,7 @@ local Util = require("salesforce.util")
 local Job = require("plenary.job")
 local Debug = require("salesforce.debug")
 local OrgManager = require("salesforce.org_manager")
+local Config = require("salesforce.config")
 
 function Job:is_running()
     if self.handle and not vim.loop.is_closing(self.handle) and vim.loop.is_active(self.handle) then
@@ -14,6 +15,7 @@ end
 local M = {}
 
 local temp_dir
+local executable = Config:get_options().sf_executable
 
 local function diff_callback(j)
     vim.schedule(function()
@@ -86,9 +88,10 @@ local function execute_job(args)
     Debug:log("diff.lua", "Command: ")
     Debug:log("diff.lua", all_args)
     local new_job = Job:new({
-        command = "sf",
+        command = executable,
         args = all_args,
         on_exit = diff_callback,
+        env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
         on_stderr = function(_, data)
             vim.schedule(function()
                 Debug:log("diff.lua", "Command stderr is: %s", data)

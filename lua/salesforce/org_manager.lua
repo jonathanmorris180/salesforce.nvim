@@ -14,6 +14,7 @@ function Job:is_running()
 end
 
 local OrgManager = {}
+local executable = Config:get_options().sf_executable
 
 function OrgManager:new()
     local o = {}
@@ -75,12 +76,12 @@ function OrgManager:command_in_progress()
 end
 
 function OrgManager:get_org_info(add_log)
-    local command = "sf org list --json"
+    local command = string.format("%s org list --json", executable)
     Debug:log("org_manager.lua", "Executing command: %s", command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
     local new_job = Job:new({
-        command = "sf",
+        command = executable,
         args = args,
         on_exit = function(j)
             vim.schedule(function()
@@ -99,6 +100,7 @@ function OrgManager:get_org_info(add_log)
                 self:parse_orgs(sfdx_response)
             end)
         end,
+        env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
         on_stderr = function(_, data)
             vim.schedule(function()
                 Debug:log("org_manager.lua", "Command stderr is: %s", data)
@@ -122,13 +124,13 @@ function OrgManager:select_org()
     local idx = vim.fn.line(".") - 2
     local org_alias = self.orgs[idx].alias
     local org_username = self.orgs[idx].username
-    local command = string.format("sf config set target-org %s --json", org_username)
+    local command = string.format("%s config set target-org %s --json", executable, org_username)
     Debug:log("org_manager.lua", "Selected org: " .. org_alias)
     Debug:log("org_manager.lua", "Executing command: %s", command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
     local new_job = Job:new({
-        command = "sf",
+        command = executable,
         args = args,
         on_exit = function(j)
             vim.schedule(function()
@@ -168,6 +170,7 @@ function OrgManager:select_org()
                 end
             end)
         end,
+        env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
         on_stderr = function(_, data)
             vim.schedule(function()
                 Debug:log("org_manager.lua", "Command stderr is: %s", data)

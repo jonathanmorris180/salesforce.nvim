@@ -3,6 +3,7 @@ local Debug = require("salesforce.debug")
 local OrgManager = require("salesforce.org_manager")
 local Job = require("plenary.job")
 local Util = require("salesforce.util")
+local Config = require("salesforce.config")
 
 function Job:is_running()
     if self.handle and not vim.loop.is_closing(self.handle) and vim.loop.is_active(self.handle) then
@@ -34,10 +35,12 @@ M.execute_anon = function()
 
     Popup:create_popup({})
     Popup:write_to_popup("Executing anonymous Apex script...")
-    local command = string.format("sf apex run -f '%s' -o %s", path, default_username)
+    local executable = Config:get_options().sf_executable
+    local command = string.format("%s apex run -f '%s' -o %s", executable, path, default_username)
     Debug:log("execute_anon.lua", "Running " .. command .. "...")
     local new_job = Job:new({
-        command = "sf",
+        command = executable,
+        env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
         args = { "apex", "run", "-f", path, "-o", default_username },
         on_exit = function(j, code)
             vim.schedule(function()
