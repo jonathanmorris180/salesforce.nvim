@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.5](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.4...v1.2.5) (2024-02-03)
+
+
+### Bug Fixes
+
+* add sf cli executable based on os ([3d93fab](https://github.com/jonathanmorris180/salesforce.nvim/commit/3d93fabd0e3e49bea1d1d5a383ac967f3c0b460c))
+* update docs ([7eabba1](https://github.com/jonathanmorris180/salesforce.nvim/commit/7eabba16ef1c343046a8e3b31ca583c1c8d1ae33))
+
 ## [1.2.4](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.3...v1.2.4) (2024-01-28)
 
 
