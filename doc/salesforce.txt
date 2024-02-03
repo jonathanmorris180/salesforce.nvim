@@ -47,7 +47,7 @@ You can pass in a lua table of options to customize the plugin. The default opti
     org_manager = {
         default_org_indicator = "󰄬",
     },
-    -- Default SF CLI executable is SF (should not need to be changed)
+    -- Default SF CLI executable (should not need to be changed)
     sf_executable = "sf",
 }
 <
