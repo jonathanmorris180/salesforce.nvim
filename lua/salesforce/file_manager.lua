@@ -14,6 +14,8 @@ end
 
 local M = {}
 
+local executable = Config:get_options().sf_executable
+
 local function push_to_org_callback(j)
     vim.schedule(function()
         local sfdx_output = j:result()
@@ -126,7 +128,7 @@ local function push(command, path)
     table.insert(args, "-d")
     table.insert(args, path)
     local new_job = Job:new({
-        command = "sf",
+        command = executable,
         env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
         args = args,
         on_exit = push_to_org_callback,
@@ -151,7 +153,7 @@ local function pull(command, path)
     table.insert(args, "-d")
     table.insert(args, path)
     local new_job = Job:new({
-        command = "sf",
+        command = executable,
         env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
         args = args,
         on_exit = pull_from_org_callback,
@@ -181,7 +183,8 @@ M.push_to_org = function()
     end
 
     Util.clear_and_notify(string.format("Pushing %s to org %s...", file_name, default_username))
-    local command = string.format("sf project deploy start --json -o %s", default_username)
+    local command =
+        string.format("%s project deploy start --json -o %s", executable, default_username)
     Debug:log("file_manager.lua", "Command: " .. command .. string.format(" -d '%s'", path))
     push(command, path)
 end
@@ -197,7 +200,8 @@ M.pull_from_org = function()
     end
 
     Util.clear_and_notify(string.format("Pulling %s from org %s...", file_name, default_username))
-    local command = string.format("sf project retrieve start --json -o %s", default_username)
+    local command =
+        string.format("%s project retrieve start --json -o %s", executable, default_username)
     if Config:get_options().file_manager.ignore_conflicts then
         Debug:log("file_manager.lua", "Ignoring conflicts becuase of config option")
         command = command .. " --ignore-conflicts"

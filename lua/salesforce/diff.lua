@@ -2,6 +2,7 @@ local Util = require("salesforce.util")
 local Job = require("plenary.job")
 local Debug = require("salesforce.debug")
 local OrgManager = require("salesforce.org_manager")
+local Config = require("salesforce.config")
 
 function Job:is_running()
     if self.handle and not vim.loop.is_closing(self.handle) and vim.loop.is_active(self.handle) then
@@ -14,6 +15,7 @@ end
 local M = {}
 
 local temp_dir
+local executable = Config:get_options().sf_executable
 
 local function diff_callback(j)
     vim.schedule(function()
@@ -75,7 +77,7 @@ local function execute_job(command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
     local new_job = Job:new({
-        command = "sf",
+        command = executable,
         args = args,
         on_exit = diff_callback,
         env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
@@ -120,12 +122,14 @@ M.diff_with_org = function()
     Debug:log("diff.lua", "Created temp dir: " .. temp_dir)
 
     local command = string.format(
-        "sf project retrieve start -m %s:%s -r %s -o %s --json",
+        "%s project retrieve start -m %s:%s -r %s -o %s --json",
+        executable,
         metadataType,
         file_name_no_ext,
         temp_dir,
         default_username
     )
+
     Debug:log("diff.lua", "Command: " .. command)
     execute_job(command)
 end
