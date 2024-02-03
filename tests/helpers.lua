@@ -9,7 +9,7 @@ local function error_message(str, pattern)
 end
 
 -- Check equality of a config `prop` against `value` in the given `child` process.
--- @usage config_equality(child, "debug", true)
+-- @usage config_equality(child, "debug", {})
 Helpers.expect.config_equality = MiniTest.new_expectation(
     "config option matches",
     function(child, prop, value)
@@ -22,7 +22,7 @@ Helpers.expect.config_equality = MiniTest.new_expectation(
 )
 
 -- Check type equality of a config `prop` against `value` in the given `child` process.
--- @usage config_type_equality(child, "debug", "boolean")
+-- @usage config_type_equality(child, "debug", "table")
 Helpers.expect.config_type_equality = MiniTest.new_expectation(
     "config option type matches",
     function(child, prop, value)

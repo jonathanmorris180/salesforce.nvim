@@ -22,7 +22,9 @@ M.execute_anon = function()
     local default_username = OrgManager:get_default_username()
 
     if file_type ~= "apex" then
-        vim.notify("Not an Apex script file.", vim.log.levels.ERROR)
+        local message = "Not an Apex script file"
+        Debug:log("execute_anon.lua", message)
+        vim.notify(message, vim.log.levels.ERROR)
         return
     end
 

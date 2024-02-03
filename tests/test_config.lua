@@ -29,8 +29,11 @@ T["setup()"]["sets exposed methods and default options value"] = function()
     child.lua([[M.setup()]])
 
     -- global object that holds your plugin information
-    eq_type_config(child, "debug", "boolean")
-    eq_config(child, "debug", false)
+    eq_type_config(child, "debug", "table")
+    eq_config(child, "debug", {
+        to_command_line = false,
+        to_file = false,
+    })
 end
 
 T["setup()"]["overrides default values"] = function()
