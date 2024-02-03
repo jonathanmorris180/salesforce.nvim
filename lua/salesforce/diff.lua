@@ -15,6 +15,7 @@ end
 local M = {}
 
 local temp_dir
+local executable = Config:get_options().sf_executable
 
 local function diff_callback(j)
     vim.schedule(function()
@@ -76,7 +77,7 @@ local function execute_job(command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
     local new_job = Job:new({
-        command = Config:get_options().sf_executable,
+        command = executable,
         args = args,
         on_exit = diff_callback,
         env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
@@ -120,10 +121,15 @@ M.diff_with_org = function()
     vim.fn.mkdir(temp_dir_with_suffix, "p")
     Debug:log("diff.lua", "Created temp dir: " .. temp_dir)
 
-    local sf = Config:get_options().sf_executable
-        .. " project retrieve start -m %s:%s -r %s -o %s --json"
+    local command = string.format(
+        "%s project retrieve start -m %s:%s -r %s -o %s --json",
+        executable,
+        metadataType,
+        file_name_no_ext,
+        temp_dir,
+        default_username
+    )
 
-    local command = string.format(sf, metadataType, file_name_no_ext, temp_dir, default_username)
     Debug:log("diff.lua", "Command: " .. command)
     execute_job(command)
 end

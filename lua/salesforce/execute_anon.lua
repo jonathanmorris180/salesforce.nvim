@@ -33,10 +33,11 @@ M.execute_anon = function()
 
     Popup:create_popup({})
     Popup:write_to_popup("Executing anonymous Apex script...")
-    local command = string.format("sf apex run -f '%s' -o %s", path, default_username)
+    local executable = Config:get_options().sf_executable
+    local command = string.format("%s apex run -f '%s' -o %s", executable, path, default_username)
     Debug:log("execute_anon.lua", "Running " .. command .. "...")
     local new_job = Job:new({
-        command = Config:get_options().sf_executable,
+        command = executable,
         env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
         args = { "apex", "run", "-f", path, "-o", default_username },
         on_exit = function(j, code)
