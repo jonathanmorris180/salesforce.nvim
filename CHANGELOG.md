@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.6](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.5...v1.2.6) (2024-02-07)
+
+
+### Bug Fixes
+
+* stylua ([2c871ad](https://github.com/jonathanmorris180/salesforce.nvim/commit/2c871ad85baa1d51e34d03c4805f696528fde4cb))
+
 ## [1.2.5](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.4...v1.2.5) (2024-02-03)
 
 
