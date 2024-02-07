@@ -94,7 +94,7 @@ function M.get_env()
         HOME = vim.env.HOME,
         PATH = vim.env.PATH,
         HTTP_PROXY = vim.env.HTTP_PROXY,
-        HTTPS_PROXY = vim.env.HTTPS_PROXY
+        HTTPS_PROXY = vim.env.HTTPS_PROXY,
     }
 end
 
