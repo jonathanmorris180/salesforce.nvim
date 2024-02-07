@@ -100,7 +100,7 @@ function OrgManager:get_org_info(add_log)
                 self:parse_orgs(sfdx_response)
             end)
         end,
-        env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
+        env = Util.get_env(),
         on_stderr = function(_, data)
             vim.schedule(function()
                 Debug:log("org_manager.lua", "Command stderr is: %s", data)
@@ -170,7 +170,7 @@ function OrgManager:select_org()
                 end
             end)
         end,
-        env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
+        env = Util.get_env(),
         on_stderr = function(_, data)
             vim.schedule(function()
                 Debug:log("org_manager.lua", "Command stderr is: %s", data)
