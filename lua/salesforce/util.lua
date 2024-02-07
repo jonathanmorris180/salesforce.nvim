@@ -89,4 +89,13 @@ function M.split(inputstr, sep)
     return t
 end
 
+function M.get_env()
+    return {
+        HOME = vim.env.HOME,
+        PATH = vim.env.PATH,
+        HTTP_PROXY = vim.env.HTTP_PROXY,
+        HTTPS_PROXY = vim.env.HTTPS_PROXY,
+    }
+end
+
 return M

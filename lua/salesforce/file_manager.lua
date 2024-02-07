@@ -129,7 +129,7 @@ local function push(command, path)
     table.insert(args, path)
     local new_job = Job:new({
         command = executable,
-        env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
+        env = Util.get_env(),
         args = args,
         on_exit = push_to_org_callback,
         on_stderr = function(_, data)
@@ -154,7 +154,7 @@ local function pull(command, path)
     table.insert(args, path)
     local new_job = Job:new({
         command = executable,
-        env = { HOME = vim.env.HOME, PATH = vim.env.PATH },
+        env = Util.get_env(),
         args = args,
         on_exit = pull_from_org_callback,
         on_stderr = function(_, data)
