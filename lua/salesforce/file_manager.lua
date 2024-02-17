@@ -185,6 +185,10 @@ M.push_to_org = function()
     Util.clear_and_notify(string.format("Pushing %s to org %s...", file_name, default_username))
     local command =
         string.format("%s project deploy start --json -o %s", executable, default_username)
+    if Config:get_options().file_manager.ignore_conflicts then
+        Debug:log("file_manager.lua", "Ignoring conflicts becuase of config option")
+        command = command .. " --ignore-conflicts"
+    end
     Debug:log("file_manager.lua", "Command: " .. command .. string.format(" -d '%s'", path))
     push(command, path)
 end
