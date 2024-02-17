@@ -126,7 +126,7 @@ require("salesforce").setup({
         borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
     },
     file_manager = {
-        ignore_conflicts = false,
+        ignore_conflicts = false, -- ignores conflicts on "sf project retrieve/deploy"
     },
     org_manager = {
         default_org_indicator = "󰄬",
