@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.7](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.6...v1.2.7) (2024-02-17)
+
+
+### Bug Fixes
+
+* add --ignore-conflicts for sf project deploy ([8e3ee9c](https://github.com/jonathanmorris180/salesforce.nvim/commit/8e3ee9c42a6635eb969713d15808f0f614a938a5))
+
 ## [1.2.6](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.5...v1.2.6) (2024-02-07)
 
 
