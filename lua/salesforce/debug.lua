@@ -45,7 +45,7 @@ function Debugger:log(scope, item, ...)
         or (type(item) == "string" and string.format(item, ...))
 
     local debug_str =
-        string.format("[salesforce:%s %s in %s] > %s", os.date("%H:%M:%S"), line, scope, final_arg)
+        string.format("[salesforce:%s %s in %s] > %s", os.date("%c"), line, scope, final_arg)
     self:log_str(debug_str)
 end
 

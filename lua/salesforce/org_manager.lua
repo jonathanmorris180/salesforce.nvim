@@ -20,7 +20,6 @@ function OrgManager:new()
     local o = {}
     setmetatable(o, self)
     self.__index = self
-    self:get_org_info(false)
     return o
 end
 
@@ -75,7 +74,7 @@ function OrgManager:command_in_progress()
     end
 end
 
-function OrgManager:get_org_info(add_log)
+function OrgManager:get_org_info(add_success_message)
     local command = string.format("%s org list --json", executable)
     Debug:log("org_manager.lua", "Executing command: %s", command)
     local args = Util.split(command, " ")
@@ -91,10 +90,10 @@ function OrgManager:get_org_info(add_log)
                 Debug:log("org_manager.lua", sfdx_output)
                 local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
                 if not json_ok or not sfdx_response then
-                    vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
+                    vim.notify("Failed to parse the 'org list' SFDX command output", vim.log.levels.ERROR)
                     return
                 end
-                if add_log then
+                if add_success_message then
                     Util.clear_and_notify("Successfully refreshed org info")
                 end
                 self:parse_orgs(sfdx_response)
@@ -140,7 +139,7 @@ function OrgManager:select_org()
                 Debug:log("org_manager.lua", sfdx_output)
                 local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
                 if not json_ok or not sfdx_response then
-                    vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
+                    vim.notify("Failed to parse the 'config set target-org' SFDX command output", vim.log.levels.ERROR)
                     return
                 end
 

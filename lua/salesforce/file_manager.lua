@@ -26,7 +26,7 @@ local function push_to_org_callback(j)
 
         local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
         if not json_ok or not sfdx_response then
-            vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
+            vim.notify("Failed to parse the 'push to org' SFDX command output", vim.log.levels.ERROR)
             return
         end
 
@@ -78,7 +78,7 @@ local function pull_from_org_callback(j)
 
         local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
         if not json_ok or not sfdx_response then
-            vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
+            vim.notify("Failed to parse the 'pull from org' SFDX command output", vim.log.levels.ERROR)
             return
         end
 

@@ -27,7 +27,7 @@ local function diff_callback(j)
 
         local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
         if not json_ok or not sfdx_response then
-            vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
+            vim.notify("Failed to parse the 'diff' SFDX command output", vim.log.levels.ERROR)
             vim.fn.delete(temp_dir, "rf")
             return
         end
