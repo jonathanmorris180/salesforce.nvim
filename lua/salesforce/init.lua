@@ -59,7 +59,7 @@ local Salesforce = {}
 ---@usage `require("salesforce").setup({})`
 function Salesforce.setup(opts)
     Salesforce.config = Config:setup(opts)
-    OrgManager:get_org_info(true)
+    OrgManager:get_org_info(false)
 end
 
 return Salesforce

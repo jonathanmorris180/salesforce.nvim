@@ -91,4 +91,25 @@ function M.get_env()
     }
 end
 
+local file_monitor = vim.loop.new_fs_event()
+
+local function on_change()
+    vim.api.nvim_command("checktime")
+    file_monitor:stop()
+end
+
+function M.stop_file_monitor()
+    file_monitor:stop()
+end
+
+function M.watch_file(full_path)
+    file_monitor:start(
+        full_path,
+        {},
+        vim.schedule_wrap(function()
+            on_change()
+        end)
+    )
+end
+
 return M
