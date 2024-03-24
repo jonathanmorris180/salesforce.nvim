@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.8](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.7...v1.2.8) (2024-03-24)
+
+
+### Bug Fixes
+
+* allow orgs without alias to be selected ([14b8c1f](https://github.com/jonathanmorris180/salesforce.nvim/commit/14b8c1fbdda608c9e8208a40d2f05c6577c00001))
+* Debug logging on plugin start ([7e10f89](https://github.com/jonathanmorris180/salesforce.nvim/commit/7e10f89f00f289c48da31cbd9fdbb4a929d03ae6))
+
 ## [1.2.7](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.6...v1.2.7) (2024-02-17)
 
 
