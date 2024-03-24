@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.9...v1.3.0) (2024-03-24)
+
+
+### Features
+
+* add check for Salesforce cli before startup ([42f66d9](https://github.com/jonathanmorris180/salesforce.nvim/commit/42f66d9573cfe9384128237662356030421fa9cf))
+
 ## [1.2.9](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.8...v1.2.9) (2024-03-24)
 
 
