@@ -1,6 +1,7 @@
 local Debug = require("salesforce.debug")
 
 local M = {}
+local namespace = vim.api.nvim_create_namespace("salesforce.util")
 
 local metadata_type_map = {
     ["lwc"] = "LightningComponentBundle",
@@ -119,6 +120,42 @@ function M.salesforce_cli_available()
         return true
     end
     return false
+end
+
+local function get_apex_ls_namespace()
+    local diagnostic_namespaces = vim.diagnostic.get_namespaces()
+    for id, ns in pairs(diagnostic_namespaces) do
+        if string.find(ns.name, "apex_ls") then
+            return id
+        end
+    end
+end
+
+function M.set_error_diagnostics(diagnostics)
+    local apex_ls_namespace = get_apex_ls_namespace()
+    local bufnr = vim.api.nvim_get_current_buf()
+    -- filter out overlapping diagnostics from apex_ls
+    local filtered_diagnostics = {}
+    for _, diagnostic in ipairs(diagnostics) do
+        local apex_ls_diagnostics =
+            vim.diagnostic.get(bufnr, { namespace = apex_ls_namespace, lnum = diagnostic.lnum })
+        local found = false
+        for _, apex_ls_diagnostic in ipairs(apex_ls_diagnostics) do
+            if apex_ls_diagnostic.message == diagnostic.message then
+                found = true
+                break
+            end
+        end
+        if not found then
+            table.insert(filtered_diagnostics, diagnostic)
+        end
+    end
+    vim.diagnostic.set(namespace, bufnr, filtered_diagnostics, {})
+end
+
+function M.clear_error_diagnostics()
+    local bufnr = vim.api.nvim_get_current_buf()
+    vim.diagnostic.reset(namespace, bufnr)
 end
 
 return M
