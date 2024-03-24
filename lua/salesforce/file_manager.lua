@@ -51,14 +51,24 @@ local function push_to_org_callback(j)
                 and sfdx_response.result.details
                 and sfdx_response.result.details.componentFailures
             then
-                local failures = {}
+                local diagnostics = {}
                 for _, failure in ipairs(sfdx_response.result.details.componentFailures) do
-                    if failure.problem then
-                        table.insert(failures, failure.problem)
+                    if failure.problem and failure.lineNumber and failure.columnNumber then
+                        table.insert(diagnostics, {
+                            lnum = failure.lineNumber - 1,
+                            col = failure.columnNumber - 1,
+                            message = failure.problem,
+                            severity = vim.diagnostic.severity.ERROR,
+                        })
                     end
                 end
-                vim.notify("Error(s) while pushing " .. file_name, vim.log.levels.ERROR)
-                vim.notify(table.concat(failures, "\n"), vim.log.levels.ERROR)
+                Util.set_error_diagnostics(diagnostics)
+                vim.notify(
+                    "Error(s) while pushing "
+                        .. file_name
+                        .. ". Check diagnostics. Overlapping messages from apex_ls have been omitted.",
+                    vim.log.levels.ERROR
+                )
                 return
             elseif sfdx_response.message then
                 vim.notify(sfdx_response.message, vim.log.levels.ERROR)
@@ -184,6 +194,7 @@ local function pull(command)
 end
 
 M.push_to_org = function()
+    Util.clear_error_diagnostics()
     active_file_path = vim.fn.expand("%:p")
     local file_name = vim.fn.fnamemodify(active_file_path, ":t")
     local default_username = OrgManager:get_default_username()
@@ -208,6 +219,7 @@ M.push_to_org = function()
 end
 
 M.pull_from_org = function()
+    Util.clear_error_diagnostics()
     active_file_path = vim.fn.expand("%:p")
     local file_name = vim.fn.fnamemodify(active_file_path, ":t")
     local default_username = OrgManager:get_default_username()
