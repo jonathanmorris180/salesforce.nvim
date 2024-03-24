@@ -50,7 +50,7 @@ function OrgManager:get_default_alias()
     end
     for _, org in ipairs(self.orgs) do
         if org.isDefaultUsername then
-            return org.alias
+            return org.alias or org.username
         end
     end
 end
@@ -90,7 +90,10 @@ function OrgManager:get_org_info(add_success_message)
                 Debug:log("org_manager.lua", sfdx_output)
                 local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
                 if not json_ok or not sfdx_response then
-                    vim.notify("Failed to parse the 'org list' SFDX command output", vim.log.levels.ERROR)
+                    vim.notify(
+                        "Failed to parse the 'org list' SFDX command output",
+                        vim.log.levels.ERROR
+                    )
                     return
                 end
                 if add_success_message then
@@ -123,8 +126,9 @@ function OrgManager:select_org()
     local idx = vim.fn.line(".") - 2
     local org_alias = self.orgs[idx].alias
     local org_username = self.orgs[idx].username
+    local org_alias_or_username = org_alias or org_username
     local command = string.format("%s config set target-org %s --json", executable, org_username)
-    Debug:log("org_manager.lua", "Selected org: " .. org_alias)
+    Debug:log("org_manager.lua", "Selected org: " .. org_alias_or_username)
     Debug:log("org_manager.lua", "Executing command: %s", command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
@@ -139,7 +143,10 @@ function OrgManager:select_org()
                 Debug:log("org_manager.lua", sfdx_output)
                 local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
                 if not json_ok or not sfdx_response then
-                    vim.notify("Failed to parse the 'config set target-org' SFDX command output", vim.log.levels.ERROR)
+                    vim.notify(
+                        "Failed to parse the 'config set target-org' SFDX command output",
+                        vim.log.levels.ERROR
+                    )
                     return
                 end
 
@@ -161,8 +168,8 @@ function OrgManager:select_org()
                 then
                     Util.clear_and_notify(
                         string.format(
-                            "Successully set target-org to %s. Refreshing org info...",
-                            org_alias
+                            "Successfully set target-org to %s. Refreshing org info...",
+                            org_alias_or_username
                         )
                     )
                     self:get_org_info(true)
@@ -202,7 +209,9 @@ function OrgManager:set_default_org()
 
     for _, org in ipairs(self.orgs) do
         local default = org.isDefaultUsername and default_org_indicator or ""
-        Popup:append_to_popup(string.format("%s (%s) %s", org.alias, org.username, default))
+        Popup:append_to_popup(
+            string.format("%s (%s) %s", org.alias or "NO ALIAS SET", org.username, default)
+        )
     end
 end
 

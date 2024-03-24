@@ -79,7 +79,7 @@ function M.get_file_name_without_extension(fileName)
 end
 
 function M.split(inputstr, sep)
-    return vim.split(inputstr, sep, {trimempty = true})
+    return vim.split(inputstr, sep, { trimempty = true })
 end
 
 function M.get_env()
