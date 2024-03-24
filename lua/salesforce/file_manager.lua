@@ -15,12 +15,13 @@ end
 local M = {}
 
 local executable = Config:get_options().sf_executable
+local active_file_path = nil
 
 local function push_to_org_callback(j)
     vim.schedule(function()
         local sfdx_output = j:result()
         sfdx_output = table.concat(sfdx_output)
-        local file_name = vim.fn.expand("%:t")
+        local file_name = vim.fn.fnamemodify(active_file_path, ":t")
         Debug:log("file_manager.lua", "Result from command:")
         Debug:log("file_manager.lua", sfdx_output)
 
@@ -71,19 +72,23 @@ local function push_to_org_callback(j)
     end)
 end
 
+local function notify_error_and_stop_monitoring(error)
+    vim.notify(error, vim.log.levels.ERROR)
+    Util.stop_file_monitor()
+end
+
 local function pull_from_org_callback(j)
     vim.schedule(function()
         local sfdx_output = j:result()
         sfdx_output = table.concat(sfdx_output)
-        local file_name = vim.fn.expand("%:t")
+        local file_name = vim.fn.fnamemodify(active_file_path, ":t")
         Debug:log("file_manager.lua", "Result from command:")
         Debug:log("file_manager.lua", sfdx_output)
 
         local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
         if not json_ok or not sfdx_response then
-            vim.notify(
-                "Failed to parse the 'pull from org' SFDX command output",
-                vim.log.levels.ERROR
+            notify_error_and_stop_monitoring(
+                "Failed to parse the 'pull from org' SFDX command output"
             )
             return
         end
@@ -95,7 +100,7 @@ local function pull_from_org_callback(j)
         then
             for _, file in ipairs(sfdx_response.result.files) do
                 if file.error then
-                    vim.notify(file.error, vim.log.levels.ERROR)
+                    notify_error_and_stop_monitoring(file.error)
                     return
                 end
             end
@@ -106,12 +111,12 @@ local function pull_from_org_callback(j)
         then
             for _, message in ipairs(sfdx_response.result.messages) do
                 if message.problem then
-                    vim.notify(message.problem, vim.log.levels.ERROR)
+                    notify_error_and_stop_monitoring(message.problem)
                     return
                 end
             end
         elseif sfdx_response.status and sfdx_response.status == 1 and sfdx_response.message then
-            vim.notify(sfdx_response.message, vim.log.levels.ERROR)
+            notify_error_and_stop_monitoring(sfdx_response.message)
             return
         end
 
@@ -120,19 +125,18 @@ local function pull_from_org_callback(j)
             and sfdx_response.result.files
             and #sfdx_response.result.files == 0
         then
-            vim.notify("No changes to pull", vim.log.levels.ERROR)
+            notify_error_and_stop_monitoring("No changes to pull")
             return
         end
-        vim.cmd("e!")
         Util.clear_and_notify("Pulled " .. file_name .. " successfully!")
     end)
 end
 
-local function push(command, path)
+local function push(command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
     table.insert(args, "-d")
-    table.insert(args, path)
+    table.insert(args, active_file_path)
     local new_job = Job:new({
         command = executable,
         env = Util.get_env(),
@@ -153,11 +157,12 @@ local function push(command, path)
     end
 end
 
-local function pull(command, path)
+local function pull(command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
     table.insert(args, "-d")
-    table.insert(args, path)
+    table.insert(args, active_file_path)
+    Util.watch_file(active_file_path)
     local new_job = Job:new({
         command = executable,
         env = Util.get_env(),
@@ -179,8 +184,8 @@ local function pull(command, path)
 end
 
 M.push_to_org = function()
-    local path = vim.fn.expand("%:p")
-    local file_name = vim.fn.expand("%:t")
+    active_file_path = vim.fn.expand("%:p")
+    local file_name = vim.fn.fnamemodify(active_file_path, ":t")
     local default_username = OrgManager:get_default_username()
 
     if not default_username then
@@ -195,13 +200,16 @@ M.push_to_org = function()
         Debug:log("file_manager.lua", "Ignoring conflicts becuase of config option")
         command = command .. " --ignore-conflicts"
     end
-    Debug:log("file_manager.lua", "Command: " .. command .. string.format(" -d '%s'", path))
-    push(command, path)
+    Debug:log(
+        "file_manager.lua",
+        "Command: " .. command .. string.format(" -d '%s'", active_file_path)
+    )
+    push(command)
 end
 
 M.pull_from_org = function()
-    local path = vim.fn.expand("%:p")
-    local file_name = vim.fn.expand("%:t")
+    active_file_path = vim.fn.expand("%:p")
+    local file_name = vim.fn.fnamemodify(active_file_path, ":t")
     local default_username = OrgManager:get_default_username()
 
     if not default_username then
@@ -216,8 +224,11 @@ M.pull_from_org = function()
         Debug:log("file_manager.lua", "Ignoring conflicts becuase of config option")
         command = command .. " --ignore-conflicts"
     end
-    Debug:log("file_manager.lua", "Command: " .. command .. string.format(" -d '%s'", path))
-    pull(command, path)
+    Debug:log(
+        "file_manager.lua",
+        "Command: " .. command .. string.format(" -d '%s'", active_file_path)
+    )
+    pull(command)
 end
 
 return M
