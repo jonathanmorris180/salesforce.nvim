@@ -48,6 +48,11 @@
 --- }
 --- <
 local Config = require("salesforce.config")
+local Util = require("salesforce.util")
+if not Util.salesforce_cli_available() then
+    Util.clear_and_notify("Salesforce CLI not found. Please install it.", vim.log.levels.ERROR)
+    return
+end
 local OrgManager = require("salesforce.org_manager")
 
 local Salesforce = {}

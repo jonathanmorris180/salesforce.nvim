@@ -1,5 +1,11 @@
-local Anon = require("salesforce.execute_anon")
 local Util = require("salesforce.util")
+
+if not Util.salesforce_cli_available() then
+    Util.clear_and_notify("Salesforce CLI not found. Please install it.", vim.log.levels.ERROR)
+    return
+end
+
+local Anon = require("salesforce.execute_anon")
 local Testrunner = require("salesforce.test_runner")
 local Popup = require("salesforce.popup")
 local FileManager = require("salesforce.file_manager")

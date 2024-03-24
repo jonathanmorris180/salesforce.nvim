@@ -112,4 +112,13 @@ function M.watch_file(full_path)
     )
 end
 
+function M.salesforce_cli_available()
+    local sfdx_available = vim.fn.executable("sfdx")
+    local sf_available = vim.fn.executable("sf")
+    if sfdx_available == 1 or sf_available == 1 then
+        return true
+    end
+    return false
+end
+
 return M
