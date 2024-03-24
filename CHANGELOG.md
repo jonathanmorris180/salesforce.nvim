@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.3.0...v1.3.1) (2024-03-24)
+
+
+### Bug Fixes
+
+* add diagnostics from push and pull commands ([1fdc601](https://github.com/jonathanmorris180/salesforce.nvim/commit/1fdc601d4bf7f40a62aed389980cb92d093a2390))
+
 ## [1.3.0](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.9...v1.3.0) (2024-03-24)
 
 
