@@ -79,14 +79,7 @@ function M.get_file_name_without_extension(fileName)
 end
 
 function M.split(inputstr, sep)
-    if sep == nil then
-        sep = "%s"
-    end
-    local t = {}
-    for str in string.gmatch(inputstr, "([^" .. sep .. "]+)") do
-        table.insert(t, str)
-    end
-    return t
+    return vim.split(inputstr, sep, { trimempty = true })
 end
 
 function M.get_env()

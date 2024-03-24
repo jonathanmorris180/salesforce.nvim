@@ -48,6 +48,7 @@
 --- }
 --- <
 local Config = require("salesforce.config")
+local OrgManager = require("salesforce.org_manager")
 
 local Salesforce = {}
 
@@ -58,6 +59,7 @@ local Salesforce = {}
 ---@usage `require("salesforce").setup({})`
 function Salesforce.setup(opts)
     Salesforce.config = Config:setup(opts)
+    OrgManager:get_org_info(true)
 end
 
 return Salesforce
