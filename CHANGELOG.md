@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.9](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.8...v1.2.9) (2024-03-24)
+
+
+### Bug Fixes
+
+* always display correct buffer name when pushing/pulling and refresh correctly ([4f8abc6](https://github.com/jonathanmorris180/salesforce.nvim/commit/4f8abc674465d4bcf2fd2152142e93eabf7355e2))
+
 ## [1.2.8](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.2.7...v1.2.8) (2024-03-24)
 
 
