@@ -52,6 +52,7 @@ local function push_to_org_callback(j)
                 and sfdx_response.result.details.componentFailures
             then
                 local diagnostics = {}
+                local problems = {}
                 for _, failure in ipairs(sfdx_response.result.details.componentFailures) do
                     if failure.problem and failure.lineNumber and failure.columnNumber then
                         table.insert(diagnostics, {
@@ -60,15 +61,33 @@ local function push_to_org_callback(j)
                             message = failure.problem,
                             severity = vim.diagnostic.severity.ERROR,
                         })
+                    elseif
+                        failure.problem
+                        and not failure.lineNumber
+                        and not failure.columnNumber
+                    then
+                        table.insert(problems, failure.problem)
                     end
                 end
-                Util.set_error_diagnostics(diagnostics)
-                vim.notify(
-                    "Error(s) while pushing "
-                        .. file_name
-                        .. ". Check diagnostics. Overlapping messages from apex_ls have been omitted.",
-                    vim.log.levels.ERROR
-                )
+                if #diagnostics > 0 then
+                    Util.set_error_diagnostics(diagnostics)
+                    vim.notify(
+                        string.format(
+                            "Error(s) while pushing %s. Check diagnostics. Overlapping messages from apex_ls have been omitted.",
+                            file_name
+                        ),
+                        vim.log.levels.ERROR
+                    )
+                elseif #problems > 0 and #diagnostics == 0 then
+                    vim.notify(
+                        string.format(
+                            "Error(s) while pushing %s: %s",
+                            file_name,
+                            table.concat(problems, ", ")
+                        ),
+                        vim.log.levels.ERROR
+                    )
+                end
                 return
             elseif sfdx_response.message then
                 vim.notify(sfdx_response.message, vim.log.levels.ERROR)
