@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.3.1...v1.3.2) (2024-04-04)
+
+
+### Bug Fixes
+
+* issue 34 ([f56ac28](https://github.com/jonathanmorris180/salesforce.nvim/commit/f56ac28a9a1385bd5c0ca080d67ae32c5fcdb0c6))
+
 ## [1.3.1](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.3.0...v1.3.1) (2024-03-24)
 
 
