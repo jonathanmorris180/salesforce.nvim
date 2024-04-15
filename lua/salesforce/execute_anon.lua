@@ -18,7 +18,7 @@ local M = {}
 M.execute_anon = function()
     Debug:log("execute_anon.lua", "Executing anonymous Apex script...")
     local path = vim.fn.expand("%:p")
-    local file_type = vim.fn.expand("%:e")
+    local file_type = vim.bo.filetype
     local default_username = OrgManager:get_default_username()
 
     if file_type ~= "apex" then
