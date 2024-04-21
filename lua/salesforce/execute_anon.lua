@@ -21,15 +21,21 @@ M.execute_anon = function()
     local file_type = vim.bo.filetype
     local default_username = OrgManager:get_default_username()
 
-    if file_type ~= "apex" then
+    if file_type == "apex" then
+        if path == "" then
+            Debug:log("execute_anon.lua", "Executing anonymous Apex script for current buffer...")
+            path = vim.fn.expand("%")
+            if not default_username then
+                Util.notify_default_org_not_set()
+                return
+            end
+        else
+            Debug:log("execute_anon.lua", "Executing anonymous Apex script for file...")
+        end
+    else
         local message = "Not an Apex script file"
         Debug:log("execute_anon.lua", message)
         vim.notify(message, vim.log.levels.ERROR)
-        return
-    end
-
-    if not default_username then
-        Util.notify_default_org_not_set()
         return
     end
 
