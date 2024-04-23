@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.3.2...v1.4.0) (2024-04-23)
+
+
+### Features
+
+* allow executing unsaved buffers anonymously ([e472fe8](https://github.com/jonathanmorris180/salesforce.nvim/commit/e472fe8be97b24a25280693c6bc9f1f0a4f6b8ed))
+
 ## [1.3.2](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.3.1...v1.3.2) (2024-04-04)
 
 
