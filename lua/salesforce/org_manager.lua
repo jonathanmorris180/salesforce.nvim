@@ -14,7 +14,7 @@ function Job:is_running()
 end
 
 local OrgManager = {}
-local executable = Config:get_options().sf_executable
+local executable = Util.get_sf_executable()
 
 function OrgManager:new()
     local o = {}
