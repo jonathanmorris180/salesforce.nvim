@@ -24,13 +24,7 @@ function Config:new()
         org_manager = {
             default_org_indicator = "󰄬",
         },
-        -- Default SF CLI executable (should not need to be changed)
-        sf_executable = "sf",
     }
-
-    if jit.os == "Windows" then
-        o.options.sf_executable = "sf.cmd"
-    end
 
     return o
 end

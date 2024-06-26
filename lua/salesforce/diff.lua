@@ -2,7 +2,6 @@ local Util = require("salesforce.util")
 local Job = require("plenary.job")
 local Debug = require("salesforce.debug")
 local OrgManager = require("salesforce.org_manager")
-local Config = require("salesforce.config")
 
 function Job:is_running()
     if self.handle and not vim.loop.is_closing(self.handle) and vim.loop.is_active(self.handle) then
@@ -15,7 +14,7 @@ end
 local M = {}
 
 local temp_dir
-local executable = Config:get_options().sf_executable
+local executable = Util.get_sf_executable()
 
 local function diff_callback(j)
     vim.schedule(function()

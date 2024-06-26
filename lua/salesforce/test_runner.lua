@@ -4,9 +4,8 @@ local OrgManager = require("salesforce.org_manager")
 local Debug = require("salesforce.debug")
 local Treesitter = require("salesforce.treesitter")
 local Util = require("salesforce.util")
-local Config = require("salesforce.config")
 
-local executable = Config:get_options().sf_executable
+local executable = Util.get_sf_executable()
 local run_class_command = executable .. ' apex run test -n "%s" --synchronous -r human -o %s'
 local run_method_command = executable .. ' apex run test -t "%s.%s" --synchronous -r human -o %s'
 

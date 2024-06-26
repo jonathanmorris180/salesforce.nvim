@@ -158,4 +158,8 @@ function M.clear_error_diagnostics()
     vim.diagnostic.reset(namespace, bufnr)
 end
 
+function M.get_sf_executable()
+    return vim.fn.fnamemodify(vim.fn.exepath("sf"), ":t")
+end
+
 return M
