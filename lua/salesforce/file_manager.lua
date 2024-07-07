@@ -14,7 +14,7 @@ end
 
 local M = {}
 
-local executable = Config:get_options().sf_executable
+local executable = Util.get_sf_executable()
 local active_file_path = nil
 
 local function push_to_org_callback(j)

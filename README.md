@@ -131,8 +131,6 @@ require("salesforce").setup({
     org_manager = {
         default_org_indicator = "󰄬",
     },
-    -- Default SF CLI executable (should not need to be changed)
-    sf_executable = "sf",
 })
 ```
 
