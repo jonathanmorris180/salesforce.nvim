@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.4.1](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.4.0...v1.4.1) (2024-07-07)
+
+
+### Bug Fixes
+
+* derive sf executable from path ([e71815e](https://github.com/jonathanmorris180/salesforce.nvim/commit/e71815e1e81a805556e8c9a3ecd1854884a0b2bb))
+* merge conflict ([5004334](https://github.com/jonathanmorris180/salesforce.nvim/commit/5004334ce4fd2d51112517dcd964eaae850445af))
+
 ## [1.4.0](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.3.2...v1.4.0) (2024-04-23)
 
 
