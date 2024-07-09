@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.4.1...v1.5.0) (2024-07-09)
+
+
+### Features
+
+* update docs ([04abec4](https://github.com/jonathanmorris180/salesforce.nvim/commit/04abec4030ecb85a12a3784dc8a55c0b59c33b02))
+
+
+### Bug Fixes
+
+* docs ([6d93e92](https://github.com/jonathanmorris180/salesforce.nvim/commit/6d93e92ef17dfbff533874490e4e35a8679fb771))
+
 ## [1.4.1](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.4.0...v1.4.1) (2024-07-07)
 
 
