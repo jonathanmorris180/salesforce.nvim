@@ -49,7 +49,6 @@ You can pass in a lua table of options to customize the plugin. The default opti
     },
 }
 <
-
 ------------------------------------------------------------------------------
                                                             *Salesforce.setup()*
                            `Salesforce.setup`({opts})
