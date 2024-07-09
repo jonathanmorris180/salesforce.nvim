@@ -7,8 +7,8 @@ function Config:new()
     -- default config values
     o.options = {
         debug = {
-            to_file = false,
-            to_command_line = false,
+            to_file = false, -- Can also be toggled with :SalesforceToggleLogFileDebug
+            to_command_line = false, -- Can also be toggled with :SalesforceToggleCommandLineDebug
         },
         popup = {
             -- The width of the popup window.
