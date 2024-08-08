@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.1](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.5.0...v1.5.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* always ignore conflicts when running diff ([3e30061](https://github.com/jonathanmorris180/salesforce.nvim/commit/3e30061c5f09cd18b222c9dc57ee28abc995ce9d))
+* diagnostics always show in correct buffer after push/pull ([0e55ba1](https://github.com/jonathanmorris180/salesforce.nvim/commit/0e55ba1e00f5e73acd9e56386f4d455e5ee9ad9f))
+
 ## [1.5.0](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.4.1...v1.5.0) (2024-07-09)
 
 
