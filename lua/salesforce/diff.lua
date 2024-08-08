@@ -82,7 +82,7 @@ local function expand(t)
 end
 
 local function execute_job(args)
-    local all_args = { "project", "retrieve", "start", unpack(expand(args)) }
+    local all_args = { "project", "retrieve", "start", "--ignore-conflicts", unpack(expand(args)) } -- always ignore when retrieving temp files
     table.insert(all_args, "--json")
     Debug:log("diff.lua", "Command: ")
     Debug:log("diff.lua", all_args)

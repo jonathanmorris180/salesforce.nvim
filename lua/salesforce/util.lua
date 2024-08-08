@@ -131,9 +131,8 @@ local function get_apex_ls_namespace()
     end
 end
 
-function M.set_error_diagnostics(diagnostics)
+function M.set_error_diagnostics(diagnostics, bufnr)
     local apex_ls_namespace = get_apex_ls_namespace()
-    local bufnr = vim.api.nvim_get_current_buf()
     -- filter out overlapping diagnostics from apex_ls
     local filtered_diagnostics = {}
     for _, diagnostic in ipairs(diagnostics) do

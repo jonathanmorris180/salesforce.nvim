@@ -15,7 +15,7 @@ end
 local M = {}
 
 local executable = Util.get_sf_executable()
-local active_file_path = nil
+local active_file_path
 
 local function push_to_org_callback(j)
     vim.schedule(function()
@@ -70,7 +70,7 @@ local function push_to_org_callback(j)
                     end
                 end
                 if #diagnostics > 0 then
-                    Util.set_error_diagnostics(diagnostics)
+                    Util.set_error_diagnostics(diagnostics, M.current_bufnr)
                     vim.notify(
                         string.format(
                             "Error(s) while pushing %s. Check diagnostics. Overlapping messages from apex_ls have been omitted.",
@@ -180,6 +180,7 @@ local function push(command)
 
     if not M.current_job or not M.current_job:is_running() then
         M.current_job = new_job
+        M.current_bufnr = vim.api.nvim_get_current_buf()
         M.current_job:start()
     else
         Util.notify_command_in_progress("push/pull")
@@ -206,6 +207,7 @@ local function pull(command)
 
     if not M.current_job or not M.current_job:is_running() then
         M.current_job = new_job
+        M.current_bufnr = vim.api.nvim_get_current_buf()
         M.current_job:start()
     else
         Util.notify_command_in_progress("push/pull")
