@@ -19,6 +19,8 @@
 --- - `SalesforceRetrieveFromOrg`: Pull the current file from the org
 --- - `SalesforceDiffFile`: Diff the current file against the file in the org
 --- - `SalesforceSetDefaultOrg`: Set the default org for the current project
+--- - `SalesforceCreateLightningComponent`: Create an Aura Component or LWC
+--- - `SalesforceCreateApex`: Create Apex trigger or class
 ---
 --- # Setup ~
 --- To use this plugin, you must first setup your project by running `require("salesforce").setup({})`.
