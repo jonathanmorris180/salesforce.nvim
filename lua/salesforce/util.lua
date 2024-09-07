@@ -127,10 +127,9 @@ function M.salesforce_cli_available()
     return false
 end
 
-M.send_cli_command = function(command, on_exit_callback, category, caller_name)
+M.send_cli_command = function(args, on_exit_callback, category, caller_name)
+    local command = table.concat(args, " ")
     Debug:log(caller_name, "Executing command %s", command)
-    local args = M.split(command, " ")
-    table.remove(args, 1)
     local new_job = Job:new({
         command = M.get_sf_executable(),
         env = M.get_env(),

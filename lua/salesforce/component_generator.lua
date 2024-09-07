@@ -5,7 +5,6 @@ local M = {}
 
 local category = "Component generation"
 
-local executable = Util.get_sf_executable()
 local prompt_for_name_and_dir = function(name_prompt, directory_prompt)
     local lwc_name = vim.fn.input(name_prompt)
     local directory = vim.fn.input(directory_prompt, vim.fn.expand("%:p:h"), "dir")
@@ -38,7 +37,10 @@ local component_creation_callback = function(job)
 
         if sfdx_response.status == 0 then
             Util.clear_and_notify(
-                string.format("Successfully created in dir: %s", sfdx_response.result.outputDir)
+                string.format(
+                    "Successfully created component in directory: %s",
+                    sfdx_response.result.outputDir
+                )
             )
         else
             Util.clear_and_notify(
@@ -74,16 +76,21 @@ M.create_lightning_component = function()
             else
                 type = "lwc"
             end
-            local command = string.format(
-                "%s lightning generate component --name %s --type %s --output-dir %s --json",
-                executable,
+            local args = {
+                "lightning",
+                "generate",
+                "component",
+                "--name",
                 name,
+                "--type",
                 type,
-                dir
-            )
+                "--output-dir",
+                dir,
+                "--json",
+            }
             Util.clear_and_notify("Creating component...")
             Util.send_cli_command(
-                command,
+                args,
                 component_creation_callback,
                 category,
                 "component_generator.lua"
@@ -117,16 +124,19 @@ M.create_apex = function()
             else
                 type = "trigger"
             end
-            local command = string.format(
-                "%s apex generate %s --name %s --output-dir %s --json",
-                executable,
+            local args = {
+                "apex",
+                "generate",
                 type,
+                "--name",
                 name,
-                dir
-            )
+                "--output-dir",
+                dir,
+                "--json",
+            }
             Util.clear_and_notify("Creating component...")
             Util.send_cli_command(
-                command,
+                args,
                 component_creation_callback,
                 category,
                 "component_generator.lua"
