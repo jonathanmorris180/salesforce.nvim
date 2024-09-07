@@ -64,15 +64,21 @@ end
 M.create_apex = function()
     local name, dir = prompt_for_name_and_dir("Apex Name: ", "Please select a directory: ")
     vim.ui.select(
-        { "class", "trigger" },
+        { "Class", "Trigger" },
         {
             prompt = "Apex file type: ",
         },
         vim.schedule_wrap(function(choice)
+            local type
+            if choice == "Class" then
+                type = "class"
+            else
+                type = "trigger"
+            end
             local command = string.format(
                 "%s apex generate %s --name %s --output-dir %s",
                 executable,
-                choice,
+                type,
                 name,
                 dir
             )

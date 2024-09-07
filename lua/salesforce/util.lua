@@ -142,10 +142,11 @@ M.send_cli_command = function(command, on_exit_callback, category, caller_name)
             end)
         end,
     })
-    if not M.current_job or not M.current_job:is_running() then
-        M.current_job = new_job
-        M.current_bufnr = vim.api.nvim_get_current_buf()
-        M.current_job:start()
+    if not M[category] or M[category].current_job or not M[category].current_job:is_running() then
+        M[category] = {}
+        M[category].current_job = new_job
+        M[category].current_bufnr = vim.api.nvim_get_current_buf()
+        M[category].current_job:start()
     else
         M.notify_command_in_progress(category)
     end
