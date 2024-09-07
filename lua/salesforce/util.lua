@@ -39,6 +39,10 @@ function M.notify_default_org_not_set()
     vim.notify(message, vim.log.levels.ERROR)
 end
 
+function M.clear_prompt()
+    vim.fn.feedkeys(":", "nx")
+end
+
 function M.clear_and_notify(msg, log_level)
     vim.fn.feedkeys(":", "nx")
     vim.notify(msg, log_level)
@@ -124,9 +128,7 @@ function M.salesforce_cli_available()
 end
 
 M.send_cli_command = function(command, on_exit_callback, category, caller_name)
-    vim.schedule(function()
-        Debug:log(caller_name, "Executing command %s", command)
-    end)
+    Debug:log(caller_name, "Executing command %s", command)
     local args = M.split(command, " ")
     table.remove(args, 1)
     local new_job = Job:new({
@@ -136,13 +138,11 @@ M.send_cli_command = function(command, on_exit_callback, category, caller_name)
         on_exit = on_exit_callback,
         on_stderr = function(_, data)
             vim.schedule(function()
-                Debug:log(caller_name, "command stderr is: %s", data)
-                Debug:log(string.format("%s", data))
-                vim.notify(data, vim.log.levels.ERROR)
+                Debug:log(caller_name, "Command stderr is: %s", data)
             end)
         end,
     })
-    if not M[category] or M[category].current_job or not M[category].current_job:is_running() then
+    if not M[category] or not M[category].current_job:is_running() then
         M[category] = {}
         M[category].current_job = new_job
         M[category].current_bufnr = vim.api.nvim_get_current_buf()
