@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.5.1...v1.6.0) (2024-09-08)
+
+
+### Features
+
+* minor alterations for component generator ([880c0c4](https://github.com/jonathanmorris180/salesforce.nvim/commit/880c0c4141d743924b8f61c22de1caef3439f0c6))
+
+
+### Bug Fixes
+
+* update how args are passed to Plenary job ([dd8d7f7](https://github.com/jonathanmorris180/salesforce.nvim/commit/dd8d7f75a1208e7b6fd9a13df18e2479f657f7e1))
+
 ## [1.5.1](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.5.0...v1.5.1) (2024-08-08)
 
 
