@@ -13,6 +13,7 @@ local Diff = require("salesforce.diff")
 local Config = require("salesforce.config")
 local OrgManager = require("salesforce.org_manager")
 local Debug = require("salesforce.debug")
+local ComponentGenerator = require("salesforce.component_generator")
 
 Debug:log("salesforce.lua", "Initializing Salesforce plugin commands...")
 
@@ -67,4 +68,12 @@ end, {})
 
 vim.api.nvim_create_user_command("SalesforceSetDefaultOrg", function()
     OrgManager:set_default_org()
+end, {})
+
+vim.api.nvim_create_user_command("SalesforceCreateLightningComponent", function()
+    ComponentGenerator:create_lightning_component()
+end, {})
+
+vim.api.nvim_create_user_command("SalesforceCreateApex", function()
+    ComponentGenerator:create_apex()
 end, {})

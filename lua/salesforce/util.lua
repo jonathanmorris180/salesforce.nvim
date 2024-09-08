@@ -1,5 +1,6 @@
 local Debug = require("salesforce.debug")
 
+local Job = require("plenary.job")
 local M = {}
 local namespace = vim.api.nvim_create_namespace("salesforce.util")
 
@@ -36,6 +37,10 @@ function M.notify_default_org_not_set()
     local message = "No default org set"
     Debug:log("util.lua", message)
     vim.notify(message, vim.log.levels.ERROR)
+end
+
+function M.clear_prompt()
+    vim.fn.feedkeys(":", "nx")
 end
 
 function M.clear_and_notify(msg, log_level)
@@ -120,6 +125,30 @@ function M.salesforce_cli_available()
         return true
     end
     return false
+end
+
+M.send_cli_command = function(args, on_exit_callback, category, caller_name)
+    local command = table.concat(args, " ")
+    Debug:log(caller_name, "Executing command %s", command)
+    local new_job = Job:new({
+        command = M.get_sf_executable(),
+        env = M.get_env(),
+        args = args,
+        on_exit = on_exit_callback,
+        on_stderr = function(_, data)
+            vim.schedule(function()
+                Debug:log(caller_name, "Command stderr is: %s", data)
+            end)
+        end,
+    })
+    if not M[category] or not M[category].current_job:is_running() then
+        M[category] = {}
+        M[category].current_job = new_job
+        M[category].current_bufnr = vim.api.nvim_get_current_buf()
+        M[category].current_job:start()
+    else
+        M.notify_command_in_progress(category)
+    end
 end
 
 local function get_apex_ls_namespace()
