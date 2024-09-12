@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.6.1...v1.6.2) (2024-09-12)
+
+
+### Bug Fixes
+
+* issue 48 ([5d01238](https://github.com/jonathanmorris180/salesforce.nvim/commit/5d01238ca3b4aa3517951e16cb995ff8f916b7f7))
+
 ## [1.6.1](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.6.0...v1.6.1) (2024-09-08)
 
 
