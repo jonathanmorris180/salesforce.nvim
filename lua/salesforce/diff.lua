@@ -82,7 +82,7 @@ local function expand(t)
 end
 
 local function execute_job(args)
-    local all_args = { "project", "retrieve", "start", "--ignore-conflicts", unpack(expand(args)) } -- always ignore when retrieving temp files
+    local all_args = { "project", "retrieve", "start", "--unzip", unpack(expand(args)) } -- always ignore when retrieving temp files
     table.insert(all_args, "--json")
     Debug:log("diff.lua", "Command: ")
     Debug:log("diff.lua", all_args)
@@ -127,12 +127,10 @@ M.diff_with_org = function()
 
     Util.clear_and_notify(string.format("Diffing %s with org %s...", file_name, default_username))
     temp_dir = vim.fn.tempname()
-    local temp_dir_with_suffix = temp_dir .. "/main/default"
-    vim.fn.mkdir(temp_dir_with_suffix, "p")
     Debug:log("diff.lua", "Created temp dir: " .. temp_dir)
     local args = {
         ["-m"] = string.format("%s:%s", metadataType, file_name_no_ext),
-        ["-r"] = temp_dir,
+        ["--target-metadata-dir"] = temp_dir, -- See https://github.com/forcedotcom/cli/issues/3009
         ["-o"] = default_username,
     }
 
