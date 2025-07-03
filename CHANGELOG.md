@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.3](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.6.2...v1.6.3) (2025-07-03)
+
+
+### Bug Fixes
+
+* [issue 54] fix diff for static resources ([5e1e27b](https://github.com/jonathanmorris180/salesforce.nvim/commit/5e1e27b811e35c0d044b8caab9290c2dd2ff1c39))
+* update docs ([56ae63c](https://github.com/jonathanmorris180/salesforce.nvim/commit/56ae63c6cb38957df0aae9b3b03aa0bc80d6dc3b))
+
 ## [1.6.2](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.6.1...v1.6.2) (2024-09-12)
 
 
