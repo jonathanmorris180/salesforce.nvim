@@ -15,20 +15,95 @@ local M = {}
 
 local temp_dir
 local executable = Util.get_sf_executable()
+local file_name
+local current_buf
 
-local function diff_callback(j)
+local function execute_job(args, callback)
+    local all_args = Util.flatten(args)
+    Debug:log("diff.lua", "Command: ")
+    Debug:log("diff.lua", all_args)
+    local new_job = Job:new({
+        command = executable,
+        args = all_args,
+        on_exit = callback,
+        env = Util.get_env(),
+        on_stderr = function(_, data)
+            vim.schedule(function()
+                Debug:log("diff.lua", "Command stderr is: %s", data)
+            end)
+        end,
+    })
+    if not M.current_job or not M.current_job:is_running() then
+        M.current_job = new_job
+        M.current_job:start()
+    end
+end
+
+local function parse_sfdx_response(sfdx_output)
+    local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
+    if not json_ok or not sfdx_response then
+        vim.notify("Failed to parse the SFDX command output", vim.log.levels.ERROR)
+        vim.fn.delete(temp_dir, "rf")
+        return
+    end
+    return sfdx_response
+end
+
+local function finish(j)
     vim.schedule(function()
         local sfdx_output = j:result()
-        local file_name = vim.fn.expand("%:t")
         sfdx_output = table.concat(sfdx_output)
         Debug:log("diff.lua", "Result from command:")
         Debug:log("diff.lua", sfdx_output)
 
-        local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
-        if not json_ok or not sfdx_response then
-            vim.notify("Failed to parse the 'diff' SFDX command output", vim.log.levels.ERROR)
+        local sfdx_response = parse_sfdx_response(sfdx_output)
+
+        if not sfdx_response then
+            return -- for the compiler, will never happen
+        end
+
+        if sfdx_response.status ~= 0 or not sfdx_response.result or #sfdx_response.result == 0 then
+            if sfdx_response.cause then
+                vim.notify(sfdx_response.cause, vim.log.levels.ERROR)
+                vim.fn.delete(temp_dir, "rf")
+                return
+            else
+                vim.notify(
+                    "Unknown error converting from metadata to source format",
+                    vim.log.levels.ERROR
+                )
+                vim.fn.delete(temp_dir, "rf")
+                return
+            end
+        end
+
+        local retrieved_file_path = Util.find_file(temp_dir .. "/converted", file_name)
+        Debug:log("diff.lua", "Temp file path: " .. (retrieved_file_path or "Not found"))
+
+        if not retrieved_file_path or not vim.fn.filereadable(retrieved_file_path) then
+            vim.notify("Failed to retrieve the file from the org", vim.log.levels.ERROR)
             vim.fn.delete(temp_dir, "rf")
             return
+        end
+
+        Util.clear_and_notify("Diffing " .. file_name)
+        vim.api.nvim_set_current_buf(current_buf) -- In case the user moves to a different buffer while waiting
+        vim.cmd("vert diffsplit " .. retrieved_file_path)
+        vim.fn.delete(temp_dir, "rf")
+    end)
+end
+
+local function convert_to_source(j)
+    vim.schedule(function()
+        local sfdx_output = j:result()
+        sfdx_output = table.concat(sfdx_output)
+        Debug:log("diff.lua", "Result from command:")
+        Debug:log("diff.lua", sfdx_output)
+
+        local sfdx_response = parse_sfdx_response(sfdx_output)
+
+        if not sfdx_response then
+            return -- for the compiler, will never happen
         end
 
         if
@@ -57,50 +132,21 @@ local function diff_callback(j)
             end
         end
 
-        local retrieved_file_path = Util.find_file(temp_dir, file_name)
-        Debug:log("diff.lua", "Temp file path: " .. (retrieved_file_path or "Not found"))
+        -- Now, convert to source
+        -- Note: Org flag does not exist for this command
+        local unpackaged_dir = temp_dir .. "/unpackaged"
+        local output_dir = temp_dir .. "/converted"
+        local args = {
+            "project",
+            "convert",
+            "mdapi",
+            "--json",
+            ["--root-dir"] = unpackaged_dir,
+            ["--output-dir"] = output_dir,
+        }
 
-        if not retrieved_file_path or not vim.fn.filereadable(retrieved_file_path) then
-            vim.notify("Failed to retrieve the file from the org", vim.log.levels.ERROR)
-            vim.fn.delete(temp_dir, "rf")
-            return
-        end
-
-        Util.clear_and_notify("Diffing " .. file_name)
-        vim.cmd("vert diffsplit " .. retrieved_file_path)
-        vim.fn.delete(temp_dir, "rf")
+        execute_job(args, finish)
     end)
-end
-
-local function expand(t)
-    local res = {}
-    for k, v in pairs(t) do
-        res[#res + 1] = k
-        res[#res + 1] = v
-    end
-    return res
-end
-
-local function execute_job(args)
-    local all_args = { "project", "retrieve", "start", "--unzip", unpack(expand(args)) } -- always ignore when retrieving temp files
-    table.insert(all_args, "--json")
-    Debug:log("diff.lua", "Command: ")
-    Debug:log("diff.lua", all_args)
-    local new_job = Job:new({
-        command = executable,
-        args = all_args,
-        on_exit = diff_callback,
-        env = Util.get_env(),
-        on_stderr = function(_, data)
-            vim.schedule(function()
-                Debug:log("diff.lua", "Command stderr is: %s", data)
-            end)
-        end,
-    })
-    if not M.current_job or not M.current_job:is_running() then
-        M.current_job = new_job
-        M.current_job:start()
-    end
 end
 
 M.diff_with_org = function()
@@ -110,7 +156,8 @@ M.diff_with_org = function()
         return
     end
     local path = vim.fn.expand("%:p")
-    local file_name = vim.fn.expand("%:t")
+    file_name = vim.fn.expand("%:t")
+    current_buf = vim.api.nvim_get_current_buf()
     local file_name_no_ext = Util.get_file_name_without_extension(file_name)
     local metadataType = Util.get_metadata_type(path)
     local default_username = OrgManager:get_default_username()
@@ -129,12 +176,17 @@ M.diff_with_org = function()
     temp_dir = vim.fn.tempname()
     Debug:log("diff.lua", "Created temp dir: " .. temp_dir)
     local args = {
+        "project",
+        "retrieve",
+        "start",
+        "--unzip",
+        "--json",
         ["-m"] = string.format("%s:%s", metadataType, file_name_no_ext),
         ["--target-metadata-dir"] = temp_dir, -- See https://github.com/forcedotcom/cli/issues/3009
         ["-o"] = default_username,
     }
 
-    execute_job(args)
+    execute_job(args, convert_to_source)
 end
 
 return M

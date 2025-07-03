@@ -48,6 +48,27 @@ function M.clear_and_notify(msg, log_level)
     vim.notify(msg, log_level)
 end
 
+function M.flatten(args)
+    local flattened = {}
+
+    -- First, insert all array values (with integer keys)
+    for _, v in ipairs(args) do
+        -- key here would be 1, 2, 3, etc., so we don't need it
+        -- Need to use ipairs here because it preserves order
+        table.insert(flattened, v)
+    end
+
+    -- Then, insert all key-value pairs
+    for k, v in pairs(args) do
+        -- order isn't guaranteed here but the key-value pairs will be together
+        if type(k) ~= "number" then
+            table.insert(flattened, k)
+            table.insert(flattened, v)
+        end
+    end
+    return flattened
+end
+
 -- recursively search for the file
 function M.find_file(path, target)
     local scanner = vim.loop.fs_scandir(path)
