@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.5](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.6.4...v1.6.5) (2025-08-22)
+
+
+### Bug Fixes
+
+* move log statement ([19b9532](https://github.com/jonathanmorris180/salesforce.nvim/commit/19b9532a32eceddcd9a0494e14d9ebd400661e66))
+
 ## [1.6.4](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.6.3...v1.6.4) (2025-08-22)
 
 
