@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.4](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.6.3...v1.6.4) (2025-08-22)
+
+
+### Bug Fixes
+
+* nil handling in test_runner.lua ([0487a2e](https://github.com/jonathanmorris180/salesforce.nvim/commit/0487a2e4ad3fc0cfbfb878e3794c69feaf9a757b))
+
 ## [1.6.3](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.6.2...v1.6.3) (2025-07-03)
 
 
