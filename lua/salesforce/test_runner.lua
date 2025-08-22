@@ -56,6 +56,9 @@ local function execute_job(command)
         on_stderr = function(_, data)
             vim.schedule(function()
                 Debug:log("test_runner.lua", "Command stderr is: %s", data)
+                if not data then
+                    return
+                end
                 local trimmed_data = vim.trim(data)
                 if string.len(trimmed_data) > 0 then
                     Popup:write_to_popup(data)
