@@ -25,21 +25,21 @@ end
 
 function OrgManager:parse_orgs(json)
     local results = {}
-    local visited_usernames = {}
 
-    for _, orgType in pairs(json.result) do
-        for _, org in ipairs(orgType) do
-            if not visited_usernames[org.username] then
-                visited_usernames[org.username] = true
-                table.insert(results, {
-                    alias = org.alias,
-                    username = org.username,
-                    connectedStatus = org.connectedStatus,
-                    isDefaultDevHubUsername = org.isDefaultDevHubUsername,
-                    isDefaultUsername = org.isDefaultUsername,
-                })
-            end
-        end
+    for _, org in ipairs(json.result) do
+        local alias = org.alias ~= "" and org.alias or nil
+        local is_default_org = org.configs and vim.tbl_contains(org.configs, "target-org")
+        local is_default_dev_hub = org.configs and vim.tbl_contains(org.configs, "target-dev-hub")
+
+        table.insert(results, {
+            alias = alias,
+            username = org.username,
+            isDefaultUsername = is_default_org,
+            isDefaultDevHub = is_default_dev_hub,
+            isScratchOrg = org.isScratchOrg,
+            isDevHub = org.isDevHub,
+            isSandbox = org.isSandbox,
+        })
     end
     self.orgs = results
 end
@@ -75,7 +75,7 @@ function OrgManager:command_in_progress()
 end
 
 function OrgManager:get_org_info(add_success_message)
-    local command = string.format("%s org list --json", executable)
+    local command = string.format("%s auth list --json", executable)
     Debug:log("org_manager.lua", "Executing command: %s", command)
     local args = Util.split(command, " ")
     table.remove(args, 1)
@@ -91,11 +91,12 @@ function OrgManager:get_org_info(add_success_message)
                 local json_ok, sfdx_response = pcall(vim.json.decode, sfdx_output)
                 if not json_ok or not sfdx_response then
                     vim.notify(
-                        "Failed to parse the 'org list' SFDX command output",
+                        "Failed to parse the 'auth list' SFDX command output",
                         vim.log.levels.ERROR
                     )
                     return
                 end
+
                 if add_success_message then
                     Util.clear_and_notify("Successfully refreshed org info")
                 end
@@ -209,8 +210,30 @@ function OrgManager:set_default_org()
 
     for _, org in ipairs(self.orgs) do
         local default = org.isDefaultUsername and default_org_indicator or ""
+        local org_types = {}
+        if org.isScratchOrg then
+            table.insert(org_types, "Scratch")
+        end
+        if org.isDevHub then
+            if org.isDefaultDevHub then
+                table.insert(org_types, "DevHub (default)")
+            else
+                table.insert(org_types, "DevHub")
+            end
+        end
+        if org.isSandbox then
+            table.insert(org_types, "Sandbox")
+        end
+        local type_info = #org_types > 0 and ("[" .. table.concat(org_types, ", ") .. "]") or ""
+
         Popup:append_to_popup(
-            string.format("%s (%s) %s", org.alias or "NO ALIAS SET", org.username, default)
+            string.format(
+                "%s (%s) %s %s",
+                org.alias or "NO ALIAS SET",
+                org.username,
+                type_info,
+                default
+            )
         )
     end
 end

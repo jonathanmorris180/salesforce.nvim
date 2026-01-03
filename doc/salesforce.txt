@@ -1,5 +1,3 @@
-==============================================================================
-------------------------------------------------------------------------------
                                                                         *Config*
                                     `Config`
 *salesforce.nvim* Plugin for developing Salesforce applications with Neovim
