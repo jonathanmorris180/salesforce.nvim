@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.6.5...v1.7.0) (2026-01-03)
+
+
+### Features
+
+* migrate to sf auth list instead of sf org list ([c9c4bbc](https://github.com/jonathanmorris180/salesforce.nvim/commit/c9c4bbcc3b9b4a0a138bd80835ac2e172dd4e01a))
+
 ## [1.6.5](https://github.com/jonathanmorris180/salesforce.nvim/compare/v1.6.4...v1.6.5) (2025-08-22)
 
 
